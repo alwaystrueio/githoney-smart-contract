@@ -15,6 +15,8 @@ pub const settings_token_name: ByteArray = "settingsNFT"
 
 pub const min_ada: Int = 3_000_000
 
+pub const max_amount_of_policies_admiteed: Int = 10
+
 // Returns the minting information of a transaction.
 pub fn get_minting_info(tx: Transaction) -> (PolicyId, AssetName, Int) {
   expect [info] = tx.mint |> value.from_minted_value |> value.flatten

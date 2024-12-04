@@ -42,7 +42,7 @@ test success_with_contributor() {
   let maintainer_pay_output =
     Output {
       address: mocks.mk_maintainer_address(),
-      value: merge(script_input.output.value, negate(from_lovelace(min_ada)))
+      value: script_input.output.value
         |> value.add(mocks.bounty_id_policy, mocks.bounty_id_name, -1),
       datum: NoDatum,
       reference_script: None,
@@ -59,6 +59,10 @@ test success_with_contributor() {
       |> add_output(maintainer_pay_output)
       |> add_output(contributor_pay_output)
       |> add_extra_signature(mocks.admin_addr)
+
+  trace diagnostic(merge(script_input.output.value, negate(from_lovelace(min_ada)))
+        |> value.add(mocks.bounty_id_policy, mocks.bounty_id_name, -1))
+  trace diagnostic(input_datum.initial_value)
 
   validations.close(input_datum, script_ctx)
 }
