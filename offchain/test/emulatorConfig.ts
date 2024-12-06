@@ -7,11 +7,19 @@ import {
   toUnit
 } from "lucid-txpipe";
 import { deployUtxo } from "./utils";
+import { AssetClassT } from "../src/types";
 
 const tokenA = {
   policy_id: "bab31a281f888aa25f6fd7b0754be83729069d66ad76c98be4a06deb",
   asset_name: "tokenA"
 };
+export const tokens: AssetClassT[] = [];
+for (let index = 0; index < 13; index++) {
+  tokens.push({
+    policy_id: "bab31a281f888aa25f6fd7b0754be83729069d66ad76c98be4a06deb",
+    asset_name: `token${index}`
+  });
+}
 
 const bounty_id = "Bounty Name Test";
 
@@ -33,10 +41,16 @@ const ACCOUNT_ADMIN = await generateAccount({
   [tokenAUnit]: 10_000_000_000n
 });
 
-const ACCOUNT_MANTAINER = await generateAccount({
+const maintainerAssets = {
   lovelace: 10_000_000_000n,
   [tokenAUnit]: 10_000_000_000n
+};
+
+tokens.forEach((token) => {
+  maintainerAssets[toUnit(token.policy_id, fromText(token.asset_name))] = 1000n;
 });
+
+const ACCOUNT_MANTAINER = await generateAccount(maintainerAssets);
 
 const ACCOUNT_GITHONEY = {
   seedPhrase: process.env.GITHONEY_SEED!,

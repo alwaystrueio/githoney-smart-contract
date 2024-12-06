@@ -1,5 +1,5 @@
 import { describe, it } from "mocha";
-import { OutRef } from "lucid-txpipe";
+import { Assets, fromText, OutRef, toUnit } from "lucid-txpipe";
 import {
   deployUtxo,
   newAssign,
@@ -7,7 +7,14 @@ import {
   newMerge,
   signAndSubmit
 } from "../utils";
-import { ACCOUNT_0, emulator, tokenAUnit, lucid } from "../emulatorConfig";
+import {
+  ACCOUNT_0,
+  emulator,
+  tokenAUnit,
+  lucid,
+  tokens,
+  ACCOUNT_MANTAINER
+} from "../emulatorConfig";
 import { addRewards } from "../../src/operations/bounties/addRewards";
 import { expect } from "chai";
 import logger from "../../src/logger";
@@ -81,6 +88,32 @@ describe("Add Rewards tests", async () => {
       const error = e as Error;
       logger.error(error.message);
       expect(error.message).to.equal("Bounty already merged");
+    }
+  });
+
+  it("Add Rewards With too many assets", async () => {
+    const { settingsUtxo } = await deployUtxo(lucid);
+    const createTxIdId = await newBounty(lucid, settingsUtxo);
+
+    const bountyOutRef: OutRef = { txHash: createTxIdId, outputIndex: 0 };
+    const reward: Assets = {
+      lovelace: 50n
+    };
+    tokens.forEach((token) => {
+      reward[toUnit(token.policy_id, fromText(token.asset_name))] = 1000n;
+    });
+    try {
+      await addRewards(
+        settingsUtxo,
+        bountyOutRef,
+        ACCOUNT_MANTAINER.address,
+        reward,
+        lucid
+      );
+    } catch (e) {
+      const error = e as Error;
+      logger.error(error.message);
+      expect(error.message).to.equal("Too many assets, max 15");
     }
   });
 });
