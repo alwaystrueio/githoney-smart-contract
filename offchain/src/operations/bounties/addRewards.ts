@@ -43,6 +43,9 @@ async function addRewards(
   Object.entries(rewards).forEach(([asset, amount]) => {
     newAssets[asset] = newAssets[asset] ? newAssets[asset] + amount : amount;
   });
+  if (Object.keys(newAssets).length > 15) {
+    throw new Error("Too many assets, max 15");
+  }
 
   lucid.selectWalletFrom({ address: address });
   const now = new Date();
