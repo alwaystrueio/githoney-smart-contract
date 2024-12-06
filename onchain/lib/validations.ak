@@ -6,7 +6,7 @@ use aiken/transaction.{
 }
 use aiken/transaction/credential.{ScriptCredential, from_script}
 use aiken/transaction/value.{
-  AssetName, PolicyId, from_lovelace, policies, quantity_of, tokens,
+  AssetName, PolicyId, from_lovelace, flatten, quantity_of, tokens,
 }
 use checks.{
   is_assign_datum_valid, is_merge_datum_valid, is_signed_by,
@@ -15,7 +15,7 @@ use checks.{
 use types.{GithoneyDatum, SettingsDatum}
 use utils.{
   get_first_output, get_minting_info, get_script_input,
-  max_amount_of_policies_admiteed, merge_payments_parts, min_ada,
+  max_amount_of_tokens_admiteed, merge_payments_parts, min_ada,
   settings_token_name, to_githoney_datum, to_settings_datum, tokens_to_value,
   value_grater_than, value_grater_than_or_equal, value_paid_to,
 }
@@ -64,7 +64,7 @@ pub fn add_rewards(datum: GithoneyDatum, ctx: ScriptContext) -> Bool {
   let is_utxo_address_the_same = script_input.address == script_output.address
   let is_datum_not_merged = !datum.merged
   let are_policies_less_than =
-    list.length(policies(script_output.value)) <= max_amount_of_policies_admiteed
+    list.length(flatten(script_output.value)) <= max_amount_of_tokens_admiteed
 
   is_datum_not_merged? && is_datum_the_same? && is_tx_before_deadline? && is_utxo_address_the_same? && is_value_grater_than_before? && are_policies_less_than?
 }
