@@ -6,7 +6,7 @@ use aiken/transaction.{
 }
 use aiken/transaction/credential.{ScriptCredential, from_script}
 use aiken/transaction/value.{
-  AssetName, PolicyId, from_lovelace, flatten, quantity_of, tokens,
+  AssetName, PolicyId, flatten, from_lovelace, quantity_of, tokens,
 }
 use checks.{
   is_assign_datum_valid, is_merge_datum_valid, is_signed_by,
