@@ -26,6 +26,14 @@
 claim(datum, ctx)
 ```
 
+### Note 4 (Lines 54-54)
+
+? Are "badges" related policies/validators part of the protocol? How exactly?
+
+```
+badges_policy
+```
+
 ## Project Notes
 
 ## lib/checks.ak
@@ -338,6 +346,8 @@ settings_datum
 - Lines 24-24
 - Lines 23-23
 - Lines 25-25
+- Lines 26-32
+- Lines 14-20
 
 ## lib/utils.ak
 
