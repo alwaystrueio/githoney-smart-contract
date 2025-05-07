@@ -1,6 +1,6 @@
 use aiken/collection/list.{foldl, head}
 use cardano/assets.{add}
-use cardano/transaction.{Output, ScriptContext, Transaction}
+use cardano/transaction.{Output, Transaction}
 use mocks.{token_a_policy, token_b_policy, token_c_policy}
 use test_utils.{
   change_output_value, change_script_upper_bound, mk_transition_script_context,
@@ -10,7 +10,7 @@ use types.{AddRewards, GithoneyDatum}
 use utils.{to_githoney_datum}
 use validations
 
-fn tokens_value(value: value.Value) -> value.Value {
+fn tokens_value(value: assets.Value) -> assets.Value {
   let tokens =
     [
       [token_c_policy, "token1"], [token_b_policy, "token2"],

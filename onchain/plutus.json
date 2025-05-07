@@ -373,7 +373,7 @@
           "index": 0,
           "fields": [
             {
-              "title": "admin_wallet",
+              "title": "admin_address",
               "$ref": "#/definitions/types~1Wallet"
             },
             {
@@ -413,7 +413,7 @@
           "index": 0,
           "fields": [
             {
-              "title": "githoney_wallet",
+              "title": "githoney_address",
               "$ref": "#/definitions/types~1Wallet"
             },
             {

@@ -1,6 +1,6 @@
 use aiken/collection/list.{head}
 use cardano/assets.{ada_asset_name, ada_policy_id, add}
-use cardano/transaction.{Output, ScriptContext, Transaction}
+use cardano/transaction.{Output, Transaction}
 use mocks
 use test_utils.{
   change_output_value, change_script_output_datum, change_script_upper_bound,

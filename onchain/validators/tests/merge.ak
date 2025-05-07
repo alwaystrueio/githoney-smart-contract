@@ -2,7 +2,7 @@ use aiken/collection/list.{head}
 use cardano/assets.{
   ada_asset_name, ada_policy_id, add, from_asset, from_lovelace, merge,
 }
-use cardano/transaction.{NoDatum, Output, ScriptContext, Transaction}
+use cardano/transaction.{NoDatum, Output, Transaction}
 use mocks
 use test_utils.{
   add_extra_signature, add_output, change_input_value, change_output_address,

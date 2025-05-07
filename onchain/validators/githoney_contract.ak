@@ -22,8 +22,7 @@ validator githoney(settings_policy_id: PolicyId) {
     expect Some(datum) = datum
 
     let script_input = get_unique_script_input(input_ref, tx).output
-    expect ScriptCredential(bounty_id_policy) =
-      script_input.address.payment_credential
+    expect Script(bounty_id_policy) = script_input.address.payment_credential
     expect [Pair(bounty_id_name, 1)] =
       // expect only one bounty token id
       script_input.value |> tokens(bounty_id_policy) |> dict.to_pairs
@@ -52,8 +51,10 @@ validator githoney(settings_policy_id: PolicyId) {
     if minted_quantity == -1 {
       True
     } else {
-      let script_output = utxo_at_paid_to_address(tx.outputs, from_script(own_policy), 0)
-      let githoney_output = utxo_at_paid_to_address(tx.outputs, settings_datum.githoney_address, 1)
+      let script_output =
+        utxo_at_paid_to_address(tx.outputs, from_script(own_policy), 0)
+      let githoney_output =
+        utxo_at_paid_to_address(tx.outputs, settings_datum.githoney_address, 1)
       let datum = to_githoney_datum(script_output.datum)
 
       let is_minting_only_one_bounty_id_token = minted_quantity == 1
@@ -72,7 +73,7 @@ validator githoney(settings_policy_id: PolicyId) {
       let valid_deposit =
         tokens_to_value(datum.initial_value) == (
           script_output.value
-            |> value.add(own_policy, bounty_id, -1)
+            |> assets.add(own_policy, bounty_id, -1)
         )
 
       is_creation_fee_paid? && is_minting_only_one_bounty_id_token? && is_script_output_address_valid? && valid_datum? && valid_value? && valid_deposit?
@@ -92,9 +93,17 @@ validator settings {
     tx: Transaction,
   ) {
     expect Some(datum) = datum
+    let script_input = get_unique_script_input(tx, input_ref).output
+    expect [(settings_policy_policy, _, 1)] =
+      script_input.value
+        |> assets.without_lovelace()
+        |> assets.flatten()
+
     when redeemer is {
-      UpdateSettings -> update_settings(datum, tx)
-      CloseSettings -> close_settings(datum, tx)
+      UpdateSettings ->
+        update_settings(datum, script_input, settings_policy_policy, tx)
+      CloseSettings ->
+        close_settings(datum, script_input, settings_policy_policy, tx)
     }
   }
 
@@ -138,7 +147,7 @@ validator badges_contract(settings_policy_id: PolicyId) {
     let settings_datum =
       reference_input_settings_with_NFT(tx.transaction, settings_policy_id)
     let is_signed_by_githoney =
-      is_signed_by(tx, settings_datum.githoney_wallet.payment_key)
+      is_signed_by(tx, settings_datum.githoney_address.payment_credential)
     is_signed_by_githoney
   }
 

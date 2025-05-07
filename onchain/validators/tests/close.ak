@@ -1,6 +1,6 @@
 use aiken/collection/list.{head}
 use cardano/assets.{from_lovelace, merge, negate}
-use cardano/transaction.{NoDatum, Output, ScriptContext, Transaction}
+use cardano/transaction.{NoDatum, Output, Transaction}
 use mocks
 use test_utils.{
   add_extra_signature, add_output, mk_burn_script_context,
@@ -18,7 +18,7 @@ test success() {
     Output {
       address: mocks.mk_maintainer_address(),
       value: script_input.output.value
-        |> value.add(mocks.bounty_id_policy, mocks.bounty_id_name, -1),
+        |> assets.add(mocks.bounty_id_policy, mocks.bounty_id_name, -1),
       datum: NoDatum,
       reference_script: None,
     }
@@ -43,7 +43,7 @@ test success_with_contributor() {
     Output {
       address: mocks.mk_maintainer_address(),
       value: script_input.output.value
-        |> value.add(mocks.bounty_id_policy, mocks.bounty_id_name, -1),
+        |> assets.add(mocks.bounty_id_policy, mocks.bounty_id_name, -1),
       datum: NoDatum,
       reference_script: None,
     }
@@ -173,7 +173,7 @@ test already_merged_datum() {
     Output {
       address: mocks.mk_maintainer_address(),
       value: script_input.output.value
-        |> value.add(mocks.bounty_id_policy, mocks.bounty_id_name, -1),
+        |> assets.add(mocks.bounty_id_policy, mocks.bounty_id_name, -1),
       datum: NoDatum,
       reference_script: None,
     }

@@ -1,6 +1,6 @@
 use aiken/collection/list
 use cardano/assets
-use cardano/transaction.{NoDatum, Output, ScriptContext, Transaction}
+use cardano/transaction.{NoDatum, Output, Transaction}
 use mocks
 use test_utils
 use validations.{minting_policy_settings}
@@ -34,13 +34,13 @@ test wrong_minted_amount() fail {
       ..ctx,
       transaction: Transaction {
         ..ctx.transaction,
-        mint: value.to_minted_value(
-          value.from_asset(
+        mint: assets.to_minted_value(
+          assets.from_asset(
             mocks.settings_nft_policy,
             mocks.settings_token_name,
             1,
           )
-            |> value.add("123456789", "other_token", 1),
+            |> assets.add("123456789", "other_token", 1),
         ),
       },
     }
@@ -55,8 +55,8 @@ test wrong_burned_amount() {
       ..ctx,
       transaction: Transaction {
         ..ctx.transaction,
-        mint: value.to_minted_value(
-          value.from_asset(
+        mint: assets.to_minted_value(
+          assets.from_asset(
             mocks.settings_nft_policy,
             mocks.settings_token_name,
             -1234,
@@ -82,7 +82,7 @@ test without_settings_token_in_output() {
   let ctx = test_utils.mk_mp_settings_script_context()
 
   let wrong_output =
-    Output { ..mocks.mk_settings_output(), value: value.zero() }
+    Output { ..mocks.mk_settings_output(), value: assets.zero }
 
   let wrong_ctx =
     ScriptContext {

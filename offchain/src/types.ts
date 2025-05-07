@@ -69,7 +69,7 @@ namespace GithoneyValidatorRedeemer {
 }
 
 const SettingsDatumSchema = Data.Object({
-  githoney_wallet: WalletSchema,
+  githoney_address: WalletSchema,
   creation_fee: Data.Integer(),
   reward_fee: Data.Integer()
 });
@@ -83,7 +83,7 @@ function mkSettingsDatum(params: {
   rewardFee: bigint;
 }): string {
   const d: SettingsDatumT = {
-    githoney_wallet: params.githoneyWallet,
+    githoney_address: params.githoneyWallet,
     creation_fee: params.creationFee,
     reward_fee: params.rewardFee
   };

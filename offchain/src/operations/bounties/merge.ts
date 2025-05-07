@@ -60,7 +60,10 @@ async function mergeBounty(
   const maintainerAddr = await keyPairsToAddress(lucid, bountyDatum.maintainer);
   const adminAddr = await keyPairsToAddress(lucid, bountyDatum.admin);
   const settings = await lucid.datumOf(settingsUtxo, SettingsDatum);
-  const githoneyAddr = await keyPairsToAddress(lucid, settings.githoney_wallet);
+  const githoneyAddr = await keyPairsToAddress(
+    lucid,
+    settings.githoney_address
+  );
 
   const mintingPolicyid = lucid.utils.mintingPolicyToId(githoneyScript);
   const bountyIdTokenUnit = extractBountyIdTokenUnit(

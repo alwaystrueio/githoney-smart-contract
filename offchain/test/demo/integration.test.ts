@@ -255,7 +255,7 @@ describe("Integration tests", async () => {
     assert(settingsDatum.creation_fee === creationFee);
     assert(settingsDatum.reward_fee === rewardFee);
     assert(
-      (await keyPairsToAddress(lucid, settingsDatum.githoney_wallet)) ===
+      (await keyPairsToAddress(lucid, settingsDatum.githoney_address)) ===
         githoneyAddr
     );
     const mintingScript = githoneyMintingPolicy(settingsNFTPolicy);
@@ -320,7 +320,7 @@ describe("Integration tests", async () => {
     assert(newSettingsDatum.creation_fee === 10_000_000n);
     assert(newSettingsDatum.reward_fee === 5_000n);
     assert(
-      (await keyPairsToAddress(lucid, newSettingsDatum.githoney_wallet)) ===
+      (await keyPairsToAddress(lucid, newSettingsDatum.githoney_address)) ===
         githoneyAddr
     );
 

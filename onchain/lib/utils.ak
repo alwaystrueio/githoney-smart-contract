@@ -74,28 +74,28 @@ pub fn get_unique_script_input(
 }
 
 // Returns the total value paid to an address by a pending transaction.
-pub fn value_paid_to(wallet: Address, tx: Transaction) -> Value {
-  let Address { payment_credential, stake_credential } = wallet
-  let address =
-    when stake_credential is {
-      None -> address.from_verification_key(payment_credential)
-      Some(stake_k) ->
-        address.from_verification_key(payment_credential)
-          |> address.with_delegation_key(stake_k)
-    }
+// pub fn value_paid_to(wallet: Address, tx: Transaction) -> Value {
+//   let Address { payment_credential, stake_credential } = wallet
+//   let address =
+//     when stake_credential is {
+//       None -> address.from_verification_key(payment_credential)
+//       Some(stake_k) ->
+//         address.from_verification_key(payment_credential)
+//           |> address.with_delegation_key(stake_k)
+//     }
 
-  list.reduce(
-    tx.outputs,
-    value.zero(),
-    fn(acc, output) {
-      if output.address == address {
-        value.merge(acc, output.value)
-      } else {
-        acc
-      }
-    },
-  )
-}
+//   list.reduce(
+//     tx.outputs,
+//     value.zero(),
+//     fn(acc, output) {
+//       if output.address == address {
+//         value.merge(acc, output.value)
+//       } else {
+//         acc
+//       }
+//     },
+//   )
+// }
 
 pub fn get_input_with_asset(
   inputs: List<Input>,
@@ -152,7 +152,7 @@ pub fn merge_payments_parts(
   let (script_part, fee_part) =
     reward_value
       |> reduce(
-          (managment_assets, zero()),
+          (managment_assets, zero),
           fn(policy_id, token_name, quantity, acc) {
             if policy_id == bounty_id_policy {
               acc
@@ -173,9 +173,9 @@ pub fn merge_payments_parts(
 pub fn tokens_to_value(tokens: List<TokenInfo>) -> Value {
   list.reduce(
     tokens,
-    value.zero(),
+    zero,
     fn(acc, token) {
-      value.add(
+      assets.add(
         acc,
         token.asset.policy_id,
         token.asset.asset_name,

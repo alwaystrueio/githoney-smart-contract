@@ -1,6 +1,6 @@
 use aiken/collection/list.{head}
 use cardano/assets
-use cardano/transaction.{NoDatum, Output, ScriptContext, Transaction}
+use cardano/transaction.{NoDatum, Output, Transaction}
 use mocks
 use test_utils.{
   add_extra_signature, add_output, mk_settings_script_context,
@@ -15,9 +15,9 @@ fn close_ctx() -> ScriptContext {
   ScriptContext {
     ..ctx_without_value,
     transaction: Transaction {
-      ..ctx_without_value.transaction,
-      mint: value.to_minted_value(
-        value.from_asset(
+      ..ctx_without_assets.transaction,
+      mint: assets.to_minted_value(
+        assets.from_asset(
           mocks.settings_nft_policy,
           mocks.settings_token_name,
           -1,
@@ -36,7 +36,7 @@ test success() {
     Output {
       address: mocks.mk_githoney_address(),
       value: script_input.output.value
-        |> value.add(mocks.settings_nft_policy, mocks.settings_token_name, -1),
+        |> assets.add(mocks.settings_nft_policy, mocks.settings_token_name, -1),
       datum: NoDatum,
       reference_script: None,
     }
@@ -57,7 +57,7 @@ test without_githoney_signature() {
     Output {
       address: mocks.mk_githoney_address(),
       value: script_input.output.value
-        |> value.add(mocks.settings_nft_policy, mocks.settings_token_name, -1),
+        |> assets.add(mocks.settings_nft_policy, mocks.settings_token_name, -1),
       datum: NoDatum,
       reference_script: None,
     }
@@ -76,7 +76,7 @@ test githoney_bad_pay() {
   let output =
     Output {
       address: mocks.mk_githoney_address(),
-      value: value.zero(),
+      value: assets.zero,
       datum: NoDatum,
       reference_script: None,
     }
@@ -97,7 +97,7 @@ test without_settings_token_input() fail {
     Output {
       address: mocks.mk_githoney_address(),
       value: script_input.output.value
-        |> value.add(mocks.settings_nft_policy, mocks.settings_token_name, -1),
+        |> assets.add(mocks.settings_nft_policy, mocks.settings_token_name, -1),
       datum: NoDatum,
       reference_script: None,
     }
@@ -116,9 +116,9 @@ test without_settings_token_burn() {
     ScriptContext {
       ..ctx_without_value,
       transaction: Transaction {
-        ..ctx_without_value.transaction,
-        mint: value.to_minted_value(
-          value.from_asset(
+        ..ctx_without_assets.transaction,
+        mint: assets.to_minted_value(
+          assets.from_asset(
             mocks.settings_nft_policy,
             mocks.settings_token_name,
             1,
@@ -133,7 +133,7 @@ test without_settings_token_burn() {
     Output {
       address: mocks.mk_githoney_address(),
       value: script_input.output.value
-        |> value.add(mocks.settings_nft_policy, mocks.settings_token_name, -1),
+        |> assets.add(mocks.settings_nft_policy, mocks.settings_token_name, -1),
       datum: NoDatum,
       reference_script: None,
     }

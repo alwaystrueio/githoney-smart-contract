@@ -1,7 +1,7 @@
 use aiken/collection/list
-use cardano/address.{Address, ScriptCredential}
+use cardano/address.{Address, Script}
 use cardano/assets
-use cardano/transaction.{NoDatum, Output, ScriptContext, Transaction}
+use cardano/transaction.{NoDatum, Output, Transaction}
 use mocks
 use test_utils
 use utils.{min_ada}
@@ -36,8 +36,8 @@ test no_reward_assets() {
     expect Some(bounty_utxo) = list.head(ctx.transaction.outputs)
     Output {
       ..bounty_utxo,
-      value: value.from_lovelace(min_ada)
-        |> value.add(mocks.bounty_id_policy, mocks.bounty_id_name, 1),
+      value: assets.from_lovelace(min_ada)
+        |> assets.add(mocks.bounty_id_policy, mocks.bounty_id_name, 1),
     }
   }
   let wrong_ctx =
@@ -55,10 +55,10 @@ test fee_not_paid() {
   let ctx = test_utils.mk_mp_script_context()
 
   expect Some(bounty_utxo) = list.head(ctx.transaction.outputs)
-  let out_githoney_wallet =
+  let out_githoney_address =
     Output {
       address: mocks.mk_githoney_address(),
-      value: value.zero(),
+      value: assets.zero,
       datum: NoDatum,
       reference_script: None,
     }
@@ -68,7 +68,7 @@ test fee_not_paid() {
       ..ctx,
       transaction: Transaction {
         ..ctx.transaction,
-        outputs: [bounty_utxo, out_githoney_wallet],
+        outputs: [bounty_utxo, out_githoney_address],
       },
     }
   !minting_policy(mocks.settings_nft_policy, wrong_ctx)
@@ -80,7 +80,7 @@ test wrong_value() {
   expect Some(outputs) = list.tail(ctx.transaction.outputs)
   let wrong_bounty = {
     expect Some(bounty_utxo) = list.head(ctx.transaction.outputs)
-    Output { ..bounty_utxo, value: value.from_lovelace(1_234_567) }
+    Output { ..bounty_utxo, value: assets.from_lovelace(1_234_567) }
   }
   let wrong_ctx =
     ScriptContext {
@@ -102,9 +102,9 @@ test wrong_minted_amount() fail {
       ..ctx,
       transaction: Transaction {
         ..ctx.transaction,
-        mint: value.to_minted_value(
-          value.from_asset(mocks.bounty_id_policy, mocks.bounty_id_name, 1)
-            |> value.add("123456789", "other_token", 1),
+        mint: assets.to_minted_value(
+          assets.from_asset(mocks.bounty_id_policy, mocks.bounty_id_name, 1)
+            |> assets.add("123456789", "other_token", 1),
         ),
       },
     }
@@ -119,8 +119,8 @@ test wrong_burned_amount() {
       ..ctx,
       transaction: Transaction {
         ..ctx.transaction,
-        mint: value.to_minted_value(
-          value.from_asset(mocks.bounty_id_policy, mocks.bounty_id_name, -1234),
+        mint: assets.to_minted_value(
+          assets.from_asset(mocks.bounty_id_policy, mocks.bounty_id_name, -1234),
         ),
       },
     }
@@ -136,7 +136,7 @@ test invalid_script_output_address() {
     Output {
       ..bounty_utxo,
       address: Address {
-        payment_credential: ScriptCredential("addr_test"),
+        payment_credential: Script("addr_test"),
         stake_credential: None,
       },
     }

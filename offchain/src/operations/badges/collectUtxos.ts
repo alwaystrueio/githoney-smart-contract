@@ -22,7 +22,10 @@ async function collectUtxos(
 ) {
   logger.info("START collectUtxos");
   const settings = await lucid.datumOf(settingsUtxo, SettingsDatum);
-  const githoneyAddr = await keyPairsToAddress(lucid, settings.githoney_wallet);
+  const githoneyAddr = await keyPairsToAddress(
+    lucid,
+    settings.githoney_address
+  );
 
   const settingsMintingPolicy = settingsPolicy(settingsNftOutRef);
   const settingsNftPolicy = await lucid.utils.mintingPolicyToId(
@@ -40,7 +43,7 @@ async function collectUtxos(
     .newTx()
     .attachSpendingValidator(badgesScript)
     .readFrom([settingsUtxo])
-    .addSignerKey(settings.githoney_wallet.paymentKey);
+    .addSignerKey(settings.githoney_address.paymentKey);
   const policiesToAvoid: string[] = [];
   for (const meta of metadatas) {
     if (meta.policyId) {

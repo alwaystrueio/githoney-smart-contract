@@ -1,6 +1,6 @@
 use aiken/collection/list.{head}
 use cardano/assets.{from_lovelace}
-use cardano/transaction.{NoDatum, Output, ScriptContext, Transaction}
+use cardano/transaction.{NoDatum, Output, Transaction}
 use mocks
 use test_utils.{
   add_output, mk_burn_script_context, remove_mint_from_context,

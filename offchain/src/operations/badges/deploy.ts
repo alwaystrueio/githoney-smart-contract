@@ -44,7 +44,10 @@ async function deployBadges(
 ): Promise<{ cbor: string; newMetadatas: MetadataWithPolicy[] }> {
   logger.info("START deployBadges");
   const settings = await lucid.datumOf(settingsUtxo, SettingsDatum);
-  const githoneyAddr = await keyPairsToAddress(lucid, settings.githoney_wallet);
+  const githoneyAddr = await keyPairsToAddress(
+    lucid,
+    settings.githoney_address
+  );
   logger.info(`Deploying badges from ${githoneyAddr}`);
   const utxo = (await lucid.utxosAt(githoneyAddr))[0];
   const outRef = {
@@ -138,7 +141,7 @@ async function deployBadges(
     tx.readFrom([settingsUtxo])
       .attachSpendingValidator(badgesScript)
       .collectFrom(utxosToCollect, Data.void())
-      .addSignerKey(settings.githoney_wallet.paymentKey);
+      .addSignerKey(settings.githoney_address.paymentKey);
   }
 
   const txComplete = await tx.complete();

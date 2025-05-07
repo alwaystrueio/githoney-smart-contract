@@ -1,8 +1,6 @@
 use aiken/collection/list.{head}
 use cardano/assets
-use cardano/transaction.{
-  InlineDatum, NoDatum, Output, ScriptContext, Transaction,
-}
+use cardano/transaction.{InlineDatum, NoDatum, Output, Transaction}
 use mocks
 use test_utils.{
   add_extra_signature, add_output, change_input_value,
@@ -47,9 +45,9 @@ test more_than_one_token_input() {
   let datum: SettingsDatum = to_settings_datum(script_input.output.datum)
 
   let new_value =
-    value.merge(
+    assets.merge(
       script_input.output.value,
-      value.from_asset(
+      assets.from_asset(
         mocks.settings_nft_policy,
         mocks.settings_token_name,
         123,
@@ -87,7 +85,7 @@ test without_settings_token_in_output() {
   let datum: SettingsDatum = to_settings_datum(script_input.output.datum)
 
   let wrong_output =
-    Output { ..mocks.mk_settings_output(), value: value.zero() }
+    Output { ..mocks.mk_settings_output(), value: assets.zero }
 
   let script_ctx =
     ctx
