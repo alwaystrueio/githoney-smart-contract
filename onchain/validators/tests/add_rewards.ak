@@ -1,6 +1,6 @@
-use aiken/list.{foldl, head}
-use aiken/transaction.{Output, ScriptContext, Transaction}
-use aiken/transaction/value.{add}
+use aiken/collection/list.{foldl, head}
+use cardano/assets.{add}
+use cardano/transaction.{Output, ScriptContext, Transaction}
 use mocks.{token_a_policy, token_b_policy, token_c_policy}
 use test_utils.{
   change_output_value, change_script_upper_bound, mk_transition_script_context,
@@ -13,20 +13,13 @@ use validations
 fn tokens_value(value: value.Value) -> value.Value {
   let tokens =
     [
-      [token_c_policy, "token1"],
-      [token_b_policy, "token2"],
-      [token_a_policy, "token3"],
-      [token_c_policy, "token4"],
-      [token_b_policy, "token5"],
-      [token_a_policy, "token6"],
-      [token_c_policy, "token7"],
-      [token_b_policy, "token8"],
-      [token_a_policy, "token9"],
-      [token_c_policy, "token10"],
-      [token_b_policy, "token11"],
-      [token_a_policy, "token12"],
-      [token_c_policy, "token13"],
-      [token_b_policy, "token14"],
+      [token_c_policy, "token1"], [token_b_policy, "token2"],
+      [token_a_policy, "token3"], [token_c_policy, "token4"],
+      [token_b_policy, "token5"], [token_a_policy, "token6"],
+      [token_c_policy, "token7"], [token_b_policy, "token8"],
+      [token_a_policy, "token9"], [token_c_policy, "token10"],
+      [token_b_policy, "token11"], [token_a_policy, "token12"],
+      [token_c_policy, "token13"], [token_b_policy, "token14"],
     ]
   foldl(
     tokens,

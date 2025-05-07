@@ -1,10 +1,10 @@
+use aiken/collection/list
 use aiken/interval.{Finite}
-use aiken/list
 use aiken/option.{is_none, is_some}
-use aiken/transaction.{Transaction}
-use aiken/transaction/value.{
+use cardano/assets.{
   Value, from_asset, from_lovelace, is_zero, merge, negate, quantity_of,
 }
+use cardano/transaction.{Transaction}
 use types.{GithoneyDatum, VerificationKeyHash}
 use utils.{min_ada}
 
@@ -36,7 +36,7 @@ pub fn is_utxo_datum_valid(
   datum: GithoneyDatum,
 ) {
   (datum.merged == False)? && is_tx_before_deadline(tx, datum.deadline)? && is_none(
-    datum.contributor_wallet,
+    datum.contributor_address,
   )? && (datum.bounty_reward_fee == reward_fee)?
 }
 
@@ -58,12 +58,21 @@ pub fn is_assign_datum_valid(old_datum: GithoneyDatum, new_datum: GithoneyDatum)
   let expected_datum =
     GithoneyDatum {
       ..old_datum,
-      contributor_wallet: new_datum.contributor_wallet,
+      contributor_address: new_datum.contributor_address,
     }
-  new_datum == expected_datum && is_some(new_datum.contributor_wallet)
+  new_datum == expected_datum && is_some(new_datum.contributor_address)
 }
 
 pub fn is_merge_datum_valid(old_datum: GithoneyDatum, new_datum: GithoneyDatum) {
   let expected_datum = GithoneyDatum { ..old_datum, merged: True }
   new_datum == expected_datum
+}
+
+pub fn utxo_at_paid_to_address(outputs: List<Output>, address: Address, at: Int) {
+  expect Some(output) = outputs |> list.at(at)
+  if output.address == address {
+    output
+  } else {
+    fail @"address missmatch"
+  }
 }

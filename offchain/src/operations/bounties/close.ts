@@ -87,6 +87,10 @@ const addPayments = async (
   refundings: { [key: string]: Assets },
   lucid: Lucid
 ): Promise<Tx> => {
+  const maintainerAddr = await keyPairsToAddress(lucid, datum.maintainer);
+  const initialAssets = initialValueToAssets(datum.initial_value);
+  tx = tx.payToAddress(maintainerAddr, initialAssets);
+
   if (datum.contributor) {
     const contributorAddr = await keyPairsToAddress(lucid, datum.contributor);
     tx = tx.payToAddress(contributorAddr, { lovelace: MIN_ADA });
@@ -95,10 +99,6 @@ const addPayments = async (
       lovelace: assets["lovelace"] - MIN_ADA
     };
   }
-  const maintainerAddr = await keyPairsToAddress(lucid, datum.maintainer);
-  const initialAssets = initialValueToAssets(datum.initial_value);
-
-  tx = tx.payToAddress(maintainerAddr, initialAssets);
   Object.entries(refundings).forEach(([addr, refund]) => {
     tx = tx.payToAddress(addr, refund);
   });

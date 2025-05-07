@@ -1,6 +1,6 @@
-use aiken/list.{head}
-use aiken/transaction.{NoDatum, Output, ScriptContext, Transaction}
-use aiken/transaction/value
+use aiken/collection/list.{head}
+use cardano/assets
+use cardano/transaction.{NoDatum, Output, ScriptContext, Transaction}
 use mocks
 use test_utils.{
   add_extra_signature, add_output, mk_settings_script_context,

@@ -1,6 +1,6 @@
-use aiken/list.{head}
-use aiken/transaction.{NoDatum, Output, ScriptContext, Transaction}
-use aiken/transaction/value.{from_lovelace, merge, negate}
+use aiken/collection/list.{head}
+use cardano/assets.{from_lovelace, merge, negate}
+use cardano/transaction.{NoDatum, Output, ScriptContext, Transaction}
 use mocks
 use test_utils.{
   add_extra_signature, add_output, mk_burn_script_context,
@@ -37,7 +37,7 @@ test success_with_contributor() {
   let input_datum =
     GithoneyDatum {
       ..datum,
-      contributor_wallet: Some(mocks.mk_contributor_wallet()),
+      contributor_address: Some(mocks.mk_contributor_address()),
     }
   let maintainer_pay_output =
     Output {
@@ -88,7 +88,7 @@ test contributor_bad_pay() {
   let input_datum =
     GithoneyDatum {
       ..datum,
-      contributor_wallet: Some(mocks.mk_contributor_wallet()),
+      contributor_address: Some(mocks.mk_contributor_address()),
     }
   let maintainer_pay_output =
     Output {

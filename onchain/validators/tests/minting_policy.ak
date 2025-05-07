@@ -1,7 +1,7 @@
-use aiken/list
-use aiken/transaction.{NoDatum, Output, ScriptContext, Transaction}
-use aiken/transaction/credential.{Address, ScriptCredential}
-use aiken/transaction/value
+use aiken/collection/list
+use cardano/address.{Address, ScriptCredential}
+use cardano/assets
+use cardano/transaction.{NoDatum, Output, ScriptContext, Transaction}
 use mocks
 use test_utils
 use utils.{min_ada}

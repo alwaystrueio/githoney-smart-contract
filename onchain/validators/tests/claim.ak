@@ -1,6 +1,6 @@
-use aiken/list.{head}
-use aiken/transaction.{NoDatum, Output, ScriptContext, Transaction}
-use aiken/transaction/value.{from_lovelace}
+use aiken/collection/list.{head}
+use cardano/assets.{from_lovelace}
+use cardano/transaction.{NoDatum, Output, ScriptContext, Transaction}
 use mocks
 use test_utils.{
   add_output, mk_burn_script_context, remove_mint_from_context,
@@ -18,7 +18,7 @@ test success() {
     GithoneyDatum {
       ..datum,
       merged: True,
-      contributor_wallet: Some(mocks.mk_contributor_wallet()),
+      contributor_address: Some(mocks.mk_contributor_address()),
     }
   let output =
     Output {
@@ -39,7 +39,7 @@ test not_merged() {
   let input_datum =
     GithoneyDatum {
       ..datum,
-      contributor_wallet: Some(mocks.mk_contributor_wallet()),
+      contributor_address: Some(mocks.mk_contributor_address()),
     }
   let output =
     Output {
@@ -78,7 +78,7 @@ test contributor_bad_pay() {
     GithoneyDatum {
       ..datum,
       merged: True,
-      contributor_wallet: Some(mocks.mk_contributor_wallet()),
+      contributor_address: Some(mocks.mk_contributor_address()),
     }
   let output =
     Output {
@@ -100,7 +100,7 @@ test without_bounty_id_token() fail {
     GithoneyDatum {
       ..datum,
       merged: True,
-      contributor_wallet: Some(mocks.mk_contributor_wallet()),
+      contributor_address: Some(mocks.mk_contributor_address()),
     }
   let output =
     Output {
@@ -125,7 +125,7 @@ test without_bounty_id_token_burn() fail {
     GithoneyDatum {
       ..datum,
       merged: True,
-      contributor_wallet: Some(mocks.mk_contributor_wallet()),
+      contributor_address: Some(mocks.mk_contributor_address()),
     }
   let output =
     Output {

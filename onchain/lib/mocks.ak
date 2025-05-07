@@ -1,11 +1,9 @@
-use aiken/transaction.{
+use cardano/address.{Address, ScriptCredential, VerificationKeyCredential}
+use cardano/assets.{ada_asset_name, ada_policy_id}
+use cardano/transaction.{
   InlineDatum, Input, Output, OutputReference, TransactionId,
 }
-use aiken/transaction/credential.{
-  Address, ScriptCredential, VerificationKeyCredential,
-}
-use aiken/transaction/value.{ada_asset_name, ada_policy_id}
-use types.{AssetClass, GithoneyDatum, SettingsDatum, TokenInfo, Wallet}
+use types.{Address, AssetClass, GithoneyDatum, SettingsDatum, TokenInfo}
 use utils.{min_ada, settings_token_name}
 
 // This module includes mock values for testing the main validator and minting policy.
@@ -68,7 +66,7 @@ pub const reward_fee = 1000
 
 pub fn mk_settings_datum() {
   SettingsDatum {
-    githoney_wallet: Wallet { payment_key: githoney_addr, stake_key: None },
+    githoney_wallet: Address { payment_key: githoney_addr, stake_key: None },
     bounty_creation_fee: 20000,
     bounty_reward_fee: reward_fee,
   }
@@ -121,20 +119,20 @@ pub fn mk_settings_address() {
 // WALLETS
 // ========================================
 
-pub fn mk_contributor_wallet() {
-  Wallet { payment_key: contributor_addr, stake_key: None }
+pub fn mk_contributor_address() {
+  Address { payment_key: contributor_addr, stake_key: None }
 }
 
 pub fn mk_admin_wallet() {
-  Wallet { payment_key: admin_addr, stake_key: None }
+  Address { payment_key: admin_addr, stake_key: None }
 }
 
-pub fn mk_maintainer_wallet() {
-  Wallet { payment_key: maintainer_addr, stake_key: None }
+pub fn mk_maintainer_address() {
+  Address { payment_key: maintainer_addr, stake_key: None }
 }
 
 pub fn mk_githoney_wallet() {
-  Wallet { payment_key: githoney_addr, stake_key: None }
+  Address { payment_key: githoney_addr, stake_key: None }
 }
 
 // ========================================
@@ -175,13 +173,14 @@ pub fn mk_output_bounty_utxo() {
       stake_credential: None,
     },
     value: value.from_lovelace(min_ada)
-      |> value.add(token_a_policy, token_a_name, reward_amount) // Reward token
+      |> value.add(token_a_policy, token_a_name, reward_amount)
+      // Reward token
       |> value.add(bounty_id_policy, bounty_id_name, 1),
     datum: InlineDatum(
       GithoneyDatum {
         admin_wallet: mk_admin_wallet(),
-        maintainer_wallet: mk_maintainer_wallet(),
-        contributor_wallet: None,
+        maintainer_address: mk_maintainer_address(),
+        contributor_address: None,
         bounty_reward_fee: reward_fee,
         deadline: 1718938800,
         merged: False,

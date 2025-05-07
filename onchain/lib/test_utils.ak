@@ -1,15 +1,15 @@
 use aiken/bytearray
-use aiken/dict.{Dict}
+use aiken/collection/dict.{Dict}
+use aiken/collection/list.{at, concat, head, push, span, tail}
 use aiken/hash.{Blake2b_256, Hash}
 use aiken/interval.{Finite, Interval, IntervalBound}
-use aiken/list.{at, concat, head, push, span, tail}
 use aiken/option
-use aiken/transaction.{
+use cardano/address.{Address}
+use cardano/assets.{Value}
+use cardano/transaction.{
   InlineDatum, Input, Mint, NoDatum, Output, OutputReference, Redeemer,
   ScriptContext, ScriptPurpose, Spend, Transaction, TransactionId,
 }
-use aiken/transaction/credential.{Address}
-use aiken/transaction/value.{Value}
 use mocks
 use types.{GithoneyDatum}
 
@@ -193,11 +193,11 @@ pub fn change_script_input_datum(
   let inputs =
     inputs
       |> push(
-           Input {
-             ..input,
-             output: Output { ..input.output, datum: InlineDatum(datum) },
-           },
-         )
+          Input {
+            ..input,
+            output: Output { ..input.output, datum: InlineDatum(datum) },
+          },
+        )
   ScriptContext {
     ..ctx,
     transaction: Transaction { ..ctx.transaction, inputs: inputs },

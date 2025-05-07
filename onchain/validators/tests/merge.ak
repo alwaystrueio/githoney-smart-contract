@@ -1,8 +1,8 @@
-use aiken/list.{head}
-use aiken/transaction.{NoDatum, Output, ScriptContext, Transaction}
-use aiken/transaction/value.{
+use aiken/collection/list.{head}
+use cardano/assets.{
   ada_asset_name, ada_policy_id, add, from_asset, from_lovelace, merge,
 }
+use cardano/transaction.{NoDatum, Output, ScriptContext, Transaction}
 use mocks
 use test_utils.{
   add_extra_signature, add_output, change_input_value, change_output_address,
@@ -20,7 +20,7 @@ test success() {
   let input_datum =
     GithoneyDatum {
       ..datum,
-      contributor_wallet: Some(mocks.mk_contributor_wallet()),
+      contributor_address: Some(mocks.mk_contributor_address()),
     }
   let new_datum = GithoneyDatum { ..input_datum, merged: True }
   expect Some(script_output) = head(script_ctx.transaction.outputs)
@@ -72,7 +72,7 @@ test bad_new_datum() {
   let input_datum =
     GithoneyDatum {
       ..datum,
-      contributor_wallet: Some(mocks.mk_contributor_wallet()),
+      contributor_address: Some(mocks.mk_contributor_address()),
     }
   expect Some(script_output) = head(script_ctx.transaction.outputs)
   let script_input_value =
@@ -124,7 +124,7 @@ test bad_actual_datum() {
     GithoneyDatum {
       ..datum,
       merged: True,
-      contributor_wallet: Some(mocks.mk_contributor_wallet()),
+      contributor_address: Some(mocks.mk_contributor_address()),
     }
   let new_datum = GithoneyDatum { ..input_datum, merged: True }
   expect Some(script_output) = head(script_ctx.transaction.outputs)
@@ -176,7 +176,7 @@ test bad_input_value() {
   let input_datum =
     GithoneyDatum {
       ..datum,
-      contributor_wallet: Some(mocks.mk_contributor_wallet()),
+      contributor_address: Some(mocks.mk_contributor_address()),
     }
   let new_datum = GithoneyDatum { ..input_datum, merged: True }
   expect Some(script_output) = head(script_ctx.transaction.outputs)
@@ -225,7 +225,7 @@ test without_maintainer_pay() {
   let input_datum =
     GithoneyDatum {
       ..datum,
-      contributor_wallet: Some(mocks.mk_contributor_wallet()),
+      contributor_address: Some(mocks.mk_contributor_address()),
     }
   let new_datum = GithoneyDatum { ..input_datum, merged: True }
   expect Some(script_output) = head(script_ctx.transaction.outputs)
@@ -268,7 +268,7 @@ test without_admin_signature() {
   let input_datum =
     GithoneyDatum {
       ..datum,
-      contributor_wallet: Some(mocks.mk_contributor_wallet()),
+      contributor_address: Some(mocks.mk_contributor_address()),
     }
   let new_datum = GithoneyDatum { ..input_datum, merged: True }
   expect Some(script_output) = head(script_ctx.transaction.outputs)
@@ -319,7 +319,7 @@ test without_githoney_pay() {
   let input_datum =
     GithoneyDatum {
       ..datum,
-      contributor_wallet: Some(mocks.mk_contributor_wallet()),
+      contributor_address: Some(mocks.mk_contributor_address()),
     }
   let new_datum = GithoneyDatum { ..input_datum, merged: True }
   expect Some(script_output) = head(script_ctx.transaction.outputs)
@@ -358,7 +358,7 @@ test bad_address() {
   let input_datum =
     GithoneyDatum {
       ..datum,
-      contributor_wallet: Some(mocks.mk_contributor_wallet()),
+      contributor_address: Some(mocks.mk_contributor_address()),
     }
   let new_datum = GithoneyDatum { ..input_datum, merged: True }
   expect Some(script_output) = head(script_ctx.transaction.outputs)
@@ -411,7 +411,7 @@ test after_deadline() {
   let input_datum =
     GithoneyDatum {
       ..datum,
-      contributor_wallet: Some(mocks.mk_contributor_wallet()),
+      contributor_address: Some(mocks.mk_contributor_address()),
     }
   let new_datum = GithoneyDatum { ..input_datum, merged: True }
   expect Some(script_output) = head(script_ctx.transaction.outputs)
@@ -464,7 +464,7 @@ test without_bounty_id_token() fail {
   let input_datum =
     GithoneyDatum {
       ..datum,
-      contributor_wallet: Some(mocks.mk_contributor_wallet()),
+      contributor_address: Some(mocks.mk_contributor_address()),
     }
   let new_datum = GithoneyDatum { ..input_datum, merged: True }
   expect Some(script_output) = head(script_ctx.transaction.outputs)

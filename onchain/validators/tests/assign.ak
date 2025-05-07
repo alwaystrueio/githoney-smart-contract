@@ -1,6 +1,6 @@
-use aiken/list.{head}
-use aiken/transaction.{Output, ScriptContext, Transaction}
-use aiken/transaction/value.{ada_asset_name, ada_policy_id, add}
+use aiken/collection/list.{head}
+use cardano/assets.{ada_asset_name, ada_policy_id, add}
+use cardano/transaction.{Output, ScriptContext, Transaction}
 use mocks
 use test_utils.{
   change_output_value, change_script_output_datum, change_script_upper_bound,
@@ -17,7 +17,7 @@ test success() {
   let new_datum =
     GithoneyDatum {
       ..datum,
-      contributor_wallet: Some(mocks.mk_contributor_wallet()),
+      contributor_address: Some(mocks.mk_contributor_address()),
     }
   expect Some(script_output) = head(script_ctx.transaction.outputs)
   let script_output_value =
@@ -32,7 +32,7 @@ test bad_datum() {
   let script_ctx = mk_transition_script_context(Assign)
   expect Some(script_input) = head(script_ctx.transaction.inputs)
   let datum: GithoneyDatum = to_githoney_datum(script_input.output.datum)
-  let new_datum = GithoneyDatum { ..datum, contributor_wallet: None }
+  let new_datum = GithoneyDatum { ..datum, contributor_address: None }
   expect Some(script_output) = head(script_ctx.transaction.outputs)
   let script_output_value =
     script_output.value |> add(ada_policy_id, ada_asset_name, min_ada)
@@ -48,7 +48,7 @@ test bad_output_value() {
   let new_datum =
     GithoneyDatum {
       ..datum,
-      contributor_wallet: Some(mocks.mk_contributor_wallet()),
+      contributor_address: Some(mocks.mk_contributor_address()),
     }
   expect Some(script_output) = head(script_ctx.transaction.outputs)
   let script_output_value =
@@ -65,7 +65,7 @@ test after_deadline() {
   let new_datum =
     GithoneyDatum {
       ..datum,
-      contributor_wallet: Some(mocks.mk_contributor_wallet()),
+      contributor_address: Some(mocks.mk_contributor_address()),
     }
   expect Some(script_output) = head(script_ctx.transaction.outputs)
   let script_output_value =
@@ -83,7 +83,7 @@ test without_bounty_id_token() fail {
   let new_datum =
     GithoneyDatum {
       ..datum,
-      contributor_wallet: Some(mocks.mk_contributor_wallet()),
+      contributor_address: Some(mocks.mk_contributor_address()),
     }
   expect Some(script_output) = head(script_ctx.transaction.outputs)
   let script_output_value =

@@ -86,8 +86,8 @@ async function mergeBounty(
     .validTo(sixHoursFromNow.getTime())
     .collectFrom([contractUtxo], GithoneyValidatorRedeemer.Merge())
     .payToContract(validatorAddress, { inline: newBountyDatum }, scriptValue)
-    .payToAddress(maintainerAddr, { lovelace: MIN_ADA })
     .payToAddress(githoneyAddr, githoneyFee)
+    .payToAddress(maintainerAddr, { lovelace: MIN_ADA })
     .addSignerKey(adminPkh)
     .complete();
   const cbor = tx.toString();
