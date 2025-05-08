@@ -1,93 +1,71 @@
 use aiken/collection/list
 use cardano/assets
 use cardano/transaction.{NoDatum, Output, Transaction}
+use githoney_contract
 use mocks
 use test_utils
-use validations.{minting_policy_settings}
 
 test success() {
-  let ctx = test_utils.mk_mp_settings_script_context()
+  let tx = test_utils.mk_mp_settings_transaction()
 
-  minting_policy_settings(mocks.mk_settings_out_ref(), ctx)
+  githoney_contract.settings_minting.mint(mocks.mk_settings_out_ref(), None, "" , tx)
 }
 
 test wrong_datum() fail {
-  let ctx = test_utils.mk_mp_settings_script_context()
+  let tx = test_utils.mk_mp_settings_transaction()
 
-  expect Some(settings_utxo) = list.head(ctx.transaction.outputs)
+  expect Some(settings_utxo) = list.head(tx.outputs)
   let wrong_output = Output { ..settings_utxo, datum: NoDatum }
 
-  let wrong_ctx =
-    ScriptContext {
-      ..ctx,
-      transaction: Transaction { ..ctx.transaction, outputs: [wrong_output] },
-    }
+  let wrong_tx = Transaction { ..tx, outputs: [wrong_output] }
 
-  minting_policy_settings(mocks.mk_settings_out_ref(), wrong_ctx)
+  githoney_contract.settings_minting.mint(mocks.mk_settings_out_ref(), None, "" , wrong_tx)
 }
 
 test wrong_minted_amount() fail {
-  let ctx = test_utils.mk_mp_settings_script_context()
+  let tx = test_utils.mk_mp_settings_transaction()
 
-  let wrong_ctx =
-    ScriptContext {
-      ..ctx,
-      transaction: Transaction {
-        ..ctx.transaction,
-        mint: assets.to_minted_value(
-          assets.from_asset(
-            mocks.settings_nft_policy,
-            mocks.settings_token_name,
-            1,
-          )
-            |> assets.add("123456789", "other_token", 1),
-        ),
-      },
+  let wrong_tx =
+    Transaction {
+      ..tx,
+      mint: 
+        assets.from_asset(
+          mocks.settings_nft_policy,
+          mocks.settings_token_name,
+          1,
+        )
+          |> assets.add("123456789", "other_token", 1),
     }
-  minting_policy_settings(mocks.mk_settings_out_ref(), wrong_ctx)
+  githoney_contract.settings_minting.mint(mocks.mk_settings_out_ref(), None, "" , wrong_tx)
 }
 
 test wrong_burned_amount() {
-  let ctx = test_utils.mk_mp_settings_script_context()
+  let tx = test_utils.mk_mp_settings_transaction()
 
-  let wrong_ctx =
-    ScriptContext {
-      ..ctx,
-      transaction: Transaction {
-        ..ctx.transaction,
-        mint: assets.to_minted_value(
+  let wrong_tx =Transaction {
+        ..tx,
+        mint: 
           assets.from_asset(
             mocks.settings_nft_policy,
             mocks.settings_token_name,
             -1234,
           ),
-        ),
-      },
-    }
-  !minting_policy_settings(mocks.mk_settings_out_ref(), wrong_ctx)
+      }
+  !githoney_contract.settings_minting.mint(mocks.mk_settings_out_ref(), None, "" , wrong_tx)
 }
 
 test utxo_not_present_in_inputs() {
-  let ctx = test_utils.mk_mp_settings_script_context()
+  let tx = test_utils.mk_mp_settings_transaction()
 
-  let wrong_ctx =
-    ScriptContext {
-      ..ctx,
-      transaction: Transaction { ..ctx.transaction, inputs: [] },
-    }
-  !minting_policy_settings(mocks.mk_settings_out_ref(), wrong_ctx)
+  let wrong_tx =Transaction { ..tx, inputs: [] }
+  !githoney_contract.settings_minting.mint(mocks.mk_settings_out_ref(), None, "" , wrong_tx)
 }
 
 test without_settings_token_in_output() {
-  let ctx = test_utils.mk_mp_settings_script_context()
+  let tx = test_utils.mk_mp_settings_transaction()
 
-  let wrong_output =
-    Output { ..mocks.mk_settings_output(), value: assets.zero }
+  let wrong_output = Output { ..mocks.mk_settings_output(), value: assets.zero }
 
-  let wrong_ctx =
-    ScriptContext {
-      ..ctx,
-      transaction: Transaction { ..ctx.transaction, outputs: [wrong_output] },
-    }
-  !minting_policy_settings(mocks.mk_settings_out_ref(), wrong_ctx)
+  let wrong_tx =Transaction { ..tx, outputs: [wrong_output] }
+  !githoney_contract.settings_minting.mint(mocks.mk_settings_out_ref(), None, "" , wrong_tx)
 }

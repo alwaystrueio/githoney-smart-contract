@@ -1,18 +1,18 @@
 use aiken/collection/list.{head}
 use cardano/assets.{from_lovelace}
 use cardano/transaction.{NoDatum, Output, Transaction}
+use githoney_contract
 use mocks
 use test_utils.{
-  add_output, mk_burn_script_context, remove_mint_from_context,
+  add_output, mk_burn_transaction, remove_mint_from_context,
   script_input_without_bounty_id_token,
 }
 use types.{Claim, GithoneyDatum}
 use utils.{to_githoney_datum}
-use validations
 
 test success() {
-  let script_ctx = mk_burn_script_context(Claim)
-  expect Some(script_input) = head(script_ctx.transaction.inputs)
+  let tx = mk_burn_transaction(Claim)
+  expect Some(script_input) = head(tx.inputs)
   let datum: GithoneyDatum = to_githoney_datum(script_input.output.datum)
   let input_datum =
     GithoneyDatum {
@@ -27,14 +27,14 @@ test success() {
       datum: NoDatum,
       reference_script: None,
     }
-  let script_ctx = add_output(script_ctx, output)
+  let tx = add_output(tx, output)
 
-  validations.claim(input_datum, script_ctx)
+  githoney_contract.githoney.spend(mocks.settings_nft_policy, Some(input_datum), Claim, script_input.output_reference, tx)
 }
 
 test not_merged() {
-  let script_ctx = mk_burn_script_context(Claim)
-  expect Some(script_input) = head(script_ctx.transaction.inputs)
+  let tx = mk_burn_transaction(Claim)
+  expect Some(script_input) = head(tx.inputs)
   let datum: GithoneyDatum = to_githoney_datum(script_input.output.datum)
   let input_datum =
     GithoneyDatum {
@@ -48,14 +48,14 @@ test not_merged() {
       datum: NoDatum,
       reference_script: None,
     }
-  let script_ctx = add_output(script_ctx, output)
+  let tx = add_output(tx, output)
 
-  !validations.claim(input_datum, script_ctx)
+  !githoney_contract.githoney.spend(mocks.settings_nft_policy, Some(input_datum), Claim, script_input.output_reference, tx)
 }
 
 test without_contributor() fail {
-  let script_ctx = mk_burn_script_context(Claim)
-  expect Some(script_input) = head(script_ctx.transaction.inputs)
+  let tx = mk_burn_transaction(Claim)
+  expect Some(script_input) = head(tx.inputs)
   let datum: GithoneyDatum = to_githoney_datum(script_input.output.datum)
   let input_datum = GithoneyDatum { ..datum, merged: True }
   let output =
@@ -65,14 +65,14 @@ test without_contributor() fail {
       datum: NoDatum,
       reference_script: None,
     }
-  let script_ctx = add_output(script_ctx, output)
+  let tx = add_output(tx, output)
 
-  validations.claim(input_datum, script_ctx)
+  githoney_contract.githoney.spend(mocks.settings_nft_policy, Some(input_datum), Claim, script_input.output_reference, tx)
 }
 
 test contributor_bad_pay() {
-  let script_ctx = mk_burn_script_context(Claim)
-  expect Some(script_input) = head(script_ctx.transaction.inputs)
+  let tx = mk_burn_transaction(Claim)
+  expect Some(script_input) = head(tx.inputs)
   let datum: GithoneyDatum = to_githoney_datum(script_input.output.datum)
   let input_datum =
     GithoneyDatum {
@@ -87,14 +87,14 @@ test contributor_bad_pay() {
       datum: NoDatum,
       reference_script: None,
     }
-  let script_ctx = add_output(script_ctx, output)
+  let tx = add_output(tx, output)
 
-  !validations.claim(input_datum, script_ctx)
+  !githoney_contract.githoney.spend(mocks.settings_nft_policy, Some(input_datum), Claim, script_input.output_reference, tx)
 }
 
 test without_bounty_id_token() fail {
-  let script_ctx = mk_burn_script_context(Claim)
-  expect Some(script_input) = head(script_ctx.transaction.inputs)
+  let tx = mk_burn_transaction(Claim)
+  expect Some(script_input) = head(tx.inputs)
   let datum: GithoneyDatum = to_githoney_datum(script_input.output.datum)
   let input_datum =
     GithoneyDatum {
@@ -109,17 +109,17 @@ test without_bounty_id_token() fail {
       datum: NoDatum,
       reference_script: None,
     }
-  let script_ctx =
-    script_ctx
+  let tx =
+    tx
       |> add_output(output)
       |> script_input_without_bounty_id_token()
 
-  validations.claim(input_datum, script_ctx)
+  githoney_contract.githoney.spend(mocks.settings_nft_policy, Some(input_datum), Claim, script_input.output_reference, tx)
 }
 
 test without_bounty_id_token_burn() fail {
-  let script_ctx = mk_burn_script_context(Claim)
-  expect Some(script_input) = head(script_ctx.transaction.inputs)
+  let tx = mk_burn_transaction(Claim)
+  expect Some(script_input) = head(tx.inputs)
   let datum: GithoneyDatum = to_githoney_datum(script_input.output.datum)
   let input_datum =
     GithoneyDatum {
@@ -134,10 +134,10 @@ test without_bounty_id_token_burn() fail {
       datum: NoDatum,
       reference_script: None,
     }
-  let script_ctx =
-    script_ctx
+  let tx =
+    tx
       |> add_output(output)
       |> remove_mint_from_context()
 
-  validations.claim(input_datum, script_ctx)
+  githoney_contract.githoney.spend(mocks.settings_nft_policy, Some(input_datum), Claim, script_input.output_reference, tx)
 }

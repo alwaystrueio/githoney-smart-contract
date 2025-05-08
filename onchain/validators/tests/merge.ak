@@ -3,19 +3,19 @@ use cardano/assets.{
   ada_asset_name, ada_policy_id, add, from_asset, from_lovelace, merge,
 }
 use cardano/transaction.{NoDatum, Output, Transaction}
+use githoney_contract
 use mocks
 use test_utils.{
   add_extra_signature, add_output, change_input_value, change_output_address,
   change_output_value, change_script_output_datum, change_script_upper_bound,
-  mk_transition_script_context, script_input_without_bounty_id_token,
+  mk_transition_transaction, script_input_without_bounty_id_token,
 }
 use types.{GithoneyDatum, Merge}
 use utils.{min_ada, to_githoney_datum}
-use validations
 
 test success() {
-  let script_ctx = mk_transition_script_context(Merge)
-  expect Some(script_input) = head(script_ctx.transaction.inputs)
+  let tx = mk_transition_transaction(Merge)
+  expect Some(script_input) = head(tx.inputs)
   let datum: GithoneyDatum = to_githoney_datum(script_input.output.datum)
   let input_datum =
     GithoneyDatum {
@@ -23,7 +23,7 @@ test success() {
       contributor_address: Some(mocks.mk_contributor_address()),
     }
   let new_datum = GithoneyDatum { ..input_datum, merged: True }
-  expect Some(script_output) = head(script_ctx.transaction.outputs)
+  expect Some(script_output) = head(tx.outputs)
   let script_input_value =
     script_output.value |> add(ada_policy_id, ada_asset_name, min_ada)
   let githoney_fee_amount = mocks.reward_amount * mocks.reward_fee / 10000
@@ -53,8 +53,8 @@ test success() {
       reference_script: None,
     }
 
-  let script_ctx =
-    script_ctx
+  let tx =
+    tx
       |> change_script_output_datum(new_datum)
       |> change_output_value(0, script_output_value)
       |> change_input_value(0, script_input_value)
@@ -62,19 +62,25 @@ test success() {
       |> add_output(maintainer_pay_output)
       |> add_output(githoney_pay_output)
 
-  validations.merge(mocks.settings_nft_policy, input_datum, script_ctx)
+  githoney_contract.githoney.spend(
+    mocks.settings_nft_policy,
+    Some(input_datum),
+    Merge,
+    script_input.output_reference,
+    tx,
+  )
 }
 
 test bad_new_datum() {
-  let script_ctx = mk_transition_script_context(Merge)
-  expect Some(script_input) = head(script_ctx.transaction.inputs)
+  let tx = mk_transition_transaction(Merge)
+  expect Some(script_input) = head(tx.inputs)
   let datum: GithoneyDatum = to_githoney_datum(script_input.output.datum)
   let input_datum =
     GithoneyDatum {
       ..datum,
       contributor_address: Some(mocks.mk_contributor_address()),
     }
-  expect Some(script_output) = head(script_ctx.transaction.outputs)
+  expect Some(script_output) = head(tx.outputs)
   let script_input_value =
     script_output.value |> add(ada_policy_id, ada_asset_name, min_ada)
   let githoney_fee_amount = mocks.reward_amount * mocks.reward_fee / 10000
@@ -104,8 +110,8 @@ test bad_new_datum() {
       reference_script: None,
     }
 
-  let script_ctx =
-    script_ctx
+  let tx =
+    tx
       |> change_script_output_datum(input_datum)
       |> change_output_value(0, script_output_value)
       |> change_input_value(0, script_input_value)
@@ -113,12 +119,18 @@ test bad_new_datum() {
       |> add_output(maintainer_pay_output)
       |> add_output(githoney_pay_output)
 
-  !validations.merge(mocks.settings_nft_policy, input_datum, script_ctx)
+  !githoney_contract.githoney.spend(
+    mocks.settings_nft_policy,
+    Some(input_datum),
+    Merge,
+    script_input.output_reference,
+    tx,
+  )
 }
 
 test bad_actual_datum() {
-  let script_ctx = mk_transition_script_context(Merge)
-  expect Some(script_input) = head(script_ctx.transaction.inputs)
+  let tx = mk_transition_transaction(Merge)
+  expect Some(script_input) = head(tx.inputs)
   let datum: GithoneyDatum = to_githoney_datum(script_input.output.datum)
   let input_datum =
     GithoneyDatum {
@@ -127,7 +139,7 @@ test bad_actual_datum() {
       contributor_address: Some(mocks.mk_contributor_address()),
     }
   let new_datum = GithoneyDatum { ..input_datum, merged: True }
-  expect Some(script_output) = head(script_ctx.transaction.outputs)
+  expect Some(script_output) = head(tx.outputs)
   let script_input_value =
     script_output.value |> add(ada_policy_id, ada_asset_name, min_ada)
   let githoney_fee_amount = mocks.reward_amount * mocks.reward_fee / 10000
@@ -157,8 +169,8 @@ test bad_actual_datum() {
       reference_script: None,
     }
 
-  let script_ctx =
-    script_ctx
+  let tx =
+    tx
       |> change_script_output_datum(new_datum)
       |> change_output_value(0, script_output_value)
       |> change_input_value(0, script_input_value)
@@ -166,12 +178,18 @@ test bad_actual_datum() {
       |> add_output(maintainer_pay_output)
       |> add_output(githoney_pay_output)
 
-  !validations.merge(mocks.settings_nft_policy, input_datum, script_ctx)
+  !githoney_contract.githoney.spend(
+    mocks.settings_nft_policy,
+    Some(input_datum),
+    Merge,
+    script_input.output_reference,
+    tx,
+  )
 }
 
 test bad_input_value() {
-  let script_ctx = mk_transition_script_context(Merge)
-  expect Some(script_input) = head(script_ctx.transaction.inputs)
+  let tx = mk_transition_transaction(Merge)
+  expect Some(script_input) = head(tx.inputs)
   let datum: GithoneyDatum = to_githoney_datum(script_input.output.datum)
   let input_datum =
     GithoneyDatum {
@@ -179,7 +197,7 @@ test bad_input_value() {
       contributor_address: Some(mocks.mk_contributor_address()),
     }
   let new_datum = GithoneyDatum { ..input_datum, merged: True }
-  expect Some(script_output) = head(script_ctx.transaction.outputs)
+  expect Some(script_output) = head(tx.outputs)
   let githoney_fee_amount = mocks.reward_amount * mocks.reward_fee / 10000
   let script_output_value =
     merge(
@@ -207,20 +225,26 @@ test bad_input_value() {
       reference_script: None,
     }
 
-  let script_ctx =
-    script_ctx
+  let tx =
+    tx
       |> change_script_output_datum(new_datum)
       |> change_output_value(0, script_output_value)
       |> add_extra_signature(mocks.admin_addr)
       |> add_output(maintainer_pay_output)
       |> add_output(githoney_pay_output)
 
-  !validations.merge(mocks.settings_nft_policy, input_datum, script_ctx)
+  !githoney_contract.githoney.spend(
+    mocks.settings_nft_policy,
+    Some(input_datum),
+    Merge,
+    script_input.output_reference,
+    tx,
+  )
 }
 
 test without_maintainer_pay() {
-  let script_ctx = mk_transition_script_context(Merge)
-  expect Some(script_input) = head(script_ctx.transaction.inputs)
+  let tx = mk_transition_transaction(Merge)
+  expect Some(script_input) = head(tx.inputs)
   let datum: GithoneyDatum = to_githoney_datum(script_input.output.datum)
   let input_datum =
     GithoneyDatum {
@@ -228,7 +252,7 @@ test without_maintainer_pay() {
       contributor_address: Some(mocks.mk_contributor_address()),
     }
   let new_datum = GithoneyDatum { ..input_datum, merged: True }
-  expect Some(script_output) = head(script_ctx.transaction.outputs)
+  expect Some(script_output) = head(tx.outputs)
   let script_input_value =
     script_output.value |> add(ada_policy_id, ada_asset_name, min_ada)
   let githoney_fee_amount = mocks.reward_amount * mocks.reward_fee / 10000
@@ -250,20 +274,26 @@ test without_maintainer_pay() {
       reference_script: None,
     }
 
-  let script_ctx =
-    script_ctx
+  let tx =
+    tx
       |> change_script_output_datum(new_datum)
       |> change_output_value(0, script_output_value)
       |> change_input_value(0, script_input_value)
       |> add_extra_signature(mocks.admin_addr)
       |> add_output(githoney_pay_output)
 
-  !validations.merge(mocks.settings_nft_policy, input_datum, script_ctx)
+  !githoney_contract.githoney.spend(
+    mocks.settings_nft_policy,
+    Some(input_datum),
+    Merge,
+    script_input.output_reference,
+    tx,
+  )
 }
 
 test without_admin_signature() {
-  let script_ctx = mk_transition_script_context(Merge)
-  expect Some(script_input) = head(script_ctx.transaction.inputs)
+  let tx = mk_transition_transaction(Merge)
+  expect Some(script_input) = head(tx.inputs)
   let datum: GithoneyDatum = to_githoney_datum(script_input.output.datum)
   let input_datum =
     GithoneyDatum {
@@ -271,7 +301,7 @@ test without_admin_signature() {
       contributor_address: Some(mocks.mk_contributor_address()),
     }
   let new_datum = GithoneyDatum { ..input_datum, merged: True }
-  expect Some(script_output) = head(script_ctx.transaction.outputs)
+  expect Some(script_output) = head(tx.outputs)
   let script_input_value =
     script_output.value |> add(ada_policy_id, ada_asset_name, min_ada)
   let githoney_fee_amount = mocks.reward_amount * mocks.reward_fee / 10000
@@ -301,20 +331,26 @@ test without_admin_signature() {
       reference_script: None,
     }
 
-  let script_ctx =
-    script_ctx
+  let tx =
+    tx
       |> change_script_output_datum(new_datum)
       |> change_output_value(0, script_output_value)
       |> change_input_value(0, script_input_value)
       |> add_output(maintainer_pay_output)
       |> add_output(githoney_pay_output)
 
-  !validations.merge(mocks.settings_nft_policy, input_datum, script_ctx)
+  !githoney_contract.githoney.spend(
+    mocks.settings_nft_policy,
+    Some(input_datum),
+    Merge,
+    script_input.output_reference,
+    tx,
+  )
 }
 
 test without_githoney_pay() {
-  let script_ctx = mk_transition_script_context(Merge)
-  expect Some(script_input) = head(script_ctx.transaction.inputs)
+  let tx = mk_transition_transaction(Merge)
+  expect Some(script_input) = head(tx.inputs)
   let datum: GithoneyDatum = to_githoney_datum(script_input.output.datum)
   let input_datum =
     GithoneyDatum {
@@ -322,7 +358,7 @@ test without_githoney_pay() {
       contributor_address: Some(mocks.mk_contributor_address()),
     }
   let new_datum = GithoneyDatum { ..input_datum, merged: True }
-  expect Some(script_output) = head(script_ctx.transaction.outputs)
+  expect Some(script_output) = head(tx.outputs)
   let script_input_value =
     script_output.value |> add(ada_policy_id, ada_asset_name, min_ada)
   let githoney_fee_amount = mocks.reward_amount * mocks.reward_fee / 10000
@@ -340,20 +376,26 @@ test without_githoney_pay() {
       reference_script: None,
     }
 
-  let script_ctx =
-    script_ctx
+  let tx =
+    tx
       |> change_script_output_datum(new_datum)
       |> change_output_value(0, script_output_value)
       |> change_input_value(0, script_input_value)
       |> add_extra_signature(mocks.admin_addr)
       |> add_output(maintainer_pay_output)
 
-  !validations.merge(mocks.settings_nft_policy, input_datum, script_ctx)
+  !githoney_contract.githoney.spend(
+    mocks.settings_nft_policy,
+    Some(input_datum),
+    Merge,
+    script_input.output_reference,
+    tx,
+  )
 }
 
 test bad_address() {
-  let script_ctx = mk_transition_script_context(Merge)
-  expect Some(script_input) = head(script_ctx.transaction.inputs)
+  let tx = mk_transition_transaction(Merge)
+  expect Some(script_input) = head(tx.inputs)
   let datum: GithoneyDatum = to_githoney_datum(script_input.output.datum)
   let input_datum =
     GithoneyDatum {
@@ -361,7 +403,7 @@ test bad_address() {
       contributor_address: Some(mocks.mk_contributor_address()),
     }
   let new_datum = GithoneyDatum { ..input_datum, merged: True }
-  expect Some(script_output) = head(script_ctx.transaction.outputs)
+  expect Some(script_output) = head(tx.outputs)
   let script_input_value =
     script_output.value |> add(ada_policy_id, ada_asset_name, min_ada)
   let githoney_fee_amount = mocks.reward_amount * mocks.reward_fee / 10000
@@ -391,8 +433,8 @@ test bad_address() {
       reference_script: None,
     }
 
-  let script_ctx =
-    script_ctx
+  let tx =
+    tx
       |> change_script_output_datum(new_datum)
       |> change_output_value(0, script_output_value)
       |> change_input_value(0, script_input_value)
@@ -401,12 +443,18 @@ test bad_address() {
       |> add_output(githoney_pay_output)
       |> change_output_address(0, mocks.mk_contributor_address())
 
-  !validations.merge(mocks.settings_nft_policy, input_datum, script_ctx)
+  !githoney_contract.githoney.spend(
+    mocks.settings_nft_policy,
+    Some(input_datum),
+    Merge,
+    script_input.output_reference,
+    tx,
+  )
 }
 
 test after_deadline() {
-  let script_ctx = mk_transition_script_context(Merge)
-  expect Some(script_input) = head(script_ctx.transaction.inputs)
+  let tx = mk_transition_transaction(Merge)
+  expect Some(script_input) = head(tx.inputs)
   let datum: GithoneyDatum = to_githoney_datum(script_input.output.datum)
   let input_datum =
     GithoneyDatum {
@@ -414,7 +462,7 @@ test after_deadline() {
       contributor_address: Some(mocks.mk_contributor_address()),
     }
   let new_datum = GithoneyDatum { ..input_datum, merged: True }
-  expect Some(script_output) = head(script_ctx.transaction.outputs)
+  expect Some(script_output) = head(tx.outputs)
   let script_input_value =
     script_output.value |> add(ada_policy_id, ada_asset_name, min_ada)
   let githoney_fee_amount = mocks.reward_amount * mocks.reward_fee / 10000
@@ -444,8 +492,8 @@ test after_deadline() {
       reference_script: None,
     }
 
-  let script_ctx =
-    script_ctx
+  let tx =
+    tx
       |> change_script_output_datum(new_datum)
       |> change_output_value(0, script_output_value)
       |> change_input_value(0, script_input_value)
@@ -454,12 +502,18 @@ test after_deadline() {
       |> add_output(githoney_pay_output)
       |> change_script_upper_bound(datum.deadline + 1)
 
-  !validations.merge(mocks.settings_nft_policy, input_datum, script_ctx)
+  !githoney_contract.githoney.spend(
+    mocks.settings_nft_policy,
+    Some(input_datum),
+    Merge,
+    script_input.output_reference,
+    tx,
+  )
 }
 
 test without_bounty_id_token() fail {
-  let script_ctx = mk_transition_script_context(Merge)
-  expect Some(script_input) = head(script_ctx.transaction.inputs)
+  let tx = mk_transition_transaction(Merge)
+  expect Some(script_input) = head(tx.inputs)
   let datum: GithoneyDatum = to_githoney_datum(script_input.output.datum)
   let input_datum =
     GithoneyDatum {
@@ -467,7 +521,7 @@ test without_bounty_id_token() fail {
       contributor_address: Some(mocks.mk_contributor_address()),
     }
   let new_datum = GithoneyDatum { ..input_datum, merged: True }
-  expect Some(script_output) = head(script_ctx.transaction.outputs)
+  expect Some(script_output) = head(tx.outputs)
   let script_input_value =
     script_output.value |> add(ada_policy_id, ada_asset_name, min_ada)
   let githoney_fee_amount = mocks.reward_amount * mocks.reward_fee / 10000
@@ -497,8 +551,8 @@ test without_bounty_id_token() fail {
       reference_script: None,
     }
 
-  let script_ctx =
-    script_ctx
+  let tx =
+    tx
       |> change_script_output_datum(new_datum)
       |> change_output_value(0, script_output_value)
       |> change_input_value(0, script_input_value)
@@ -507,5 +561,11 @@ test without_bounty_id_token() fail {
       |> add_output(githoney_pay_output)
       |> script_input_without_bounty_id_token()
 
-  validations.merge(mocks.settings_nft_policy, input_datum, script_ctx)
+  githoney_contract.githoney.spend(
+    mocks.settings_nft_policy,
+    Some(input_datum),
+    Merge,
+    script_input.output_reference,
+    tx,
+  )
 }

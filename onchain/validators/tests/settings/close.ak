@@ -1,35 +1,31 @@
 use aiken/collection/list.{head}
 use cardano/assets
 use cardano/transaction.{NoDatum, Output, Transaction}
+use githoney_contract
 use mocks
 use test_utils.{
-  add_extra_signature, add_output, mk_settings_script_context,
+  add_extra_signature, add_output, mk_settings_transaction,
   script_input_without_settings_nft,
 }
 use types.{CloseSettings, SettingsDatum}
 use utils.{to_settings_datum}
-use validations.{close_settings}
 
-fn close_ctx() -> ScriptContext {
-  let ctx_without_value = mk_settings_script_context(CloseSettings)
-  ScriptContext {
-    ..ctx_without_value,
-    transaction: Transaction {
-      ..ctx_without_assets.transaction,
-      mint: assets.to_minted_value(
+fn close_tx() -> Transaction {
+  let tx_without_value = mk_settings_transaction(CloseSettings)
+    Transaction {
+      ..tx_without_value,
+      mint: 
         assets.from_asset(
           mocks.settings_nft_policy,
           mocks.settings_token_name,
           -1,
         ),
-      ),
-    },
-  }
+    }
 }
 
 test success() {
-  let ctx = close_ctx()
-  expect Some(script_input) = head(ctx.transaction.inputs)
+  let tx = close_tx()
+  expect Some(script_input) = head(tx.inputs)
   let datum: SettingsDatum = to_settings_datum(script_input.output.datum)
 
   let output =
@@ -40,17 +36,17 @@ test success() {
       datum: NoDatum,
       reference_script: None,
     }
-  let script_ctx =
-    ctx
+  let tx =
+    tx
       |> add_output(output)
       |> add_extra_signature(mocks.githoney_addr)
 
-  close_settings(datum, script_ctx)
+  githoney_contract.settings.spend(Some(datum), CloseSettings, script_input.output_reference, tx)
 }
 
 test without_githoney_signature() {
-  let ctx = close_ctx()
-  expect Some(script_input) = head(ctx.transaction.inputs)
+  let tx = close_tx()
+  expect Some(script_input) = head(tx.inputs)
   let datum: SettingsDatum = to_settings_datum(script_input.output.datum)
 
   let output =
@@ -61,16 +57,16 @@ test without_githoney_signature() {
       datum: NoDatum,
       reference_script: None,
     }
-  let script_ctx =
-    ctx
+  let tx =
+    tx
       |> add_output(output)
 
-  !close_settings(datum, script_ctx)
+  !githoney_contract.settings.spend(Some(datum), CloseSettings, script_input.output_reference, tx)
 }
 
 test githoney_bad_pay() {
-  let ctx = close_ctx()
-  expect Some(script_input) = head(ctx.transaction.inputs)
+  let tx = close_tx()
+  expect Some(script_input) = head(tx.inputs)
   let datum: SettingsDatum = to_settings_datum(script_input.output.datum)
 
   let output =
@@ -80,17 +76,17 @@ test githoney_bad_pay() {
       datum: NoDatum,
       reference_script: None,
     }
-  let script_ctx =
-    ctx
+  let tx =
+    tx
       |> add_output(output)
       |> add_extra_signature(mocks.githoney_addr)
 
-  !close_settings(datum, script_ctx)
+  !githoney_contract.settings.spend(Some(datum), CloseSettings, script_input.output_reference, tx)
 }
 
 test without_settings_token_input() fail {
-  let ctx = close_ctx()
-  expect Some(script_input) = head(ctx.transaction.inputs)
+  let tx = close_tx()
+  expect Some(script_input) = head(tx.inputs)
   let datum: SettingsDatum = to_settings_datum(script_input.output.datum)
 
   let output =
@@ -101,32 +97,27 @@ test without_settings_token_input() fail {
       datum: NoDatum,
       reference_script: None,
     }
-  let script_ctx =
-    ctx
+  let tx =
+    tx
       |> add_output(output)
       |> add_extra_signature(mocks.githoney_addr)
       |> script_input_without_settings_nft()
 
-  close_settings(datum, script_ctx)
+  githoney_contract.settings.spend(Some(datum), CloseSettings, script_input.output_reference, tx)
 }
 
 test without_settings_token_burn() {
-  let ctx_without_value = mk_settings_script_context(CloseSettings)
-  let ctx =
-    ScriptContext {
-      ..ctx_without_value,
-      transaction: Transaction {
-        ..ctx_without_assets.transaction,
-        mint: assets.to_minted_value(
+  let tx_without_value = mk_settings_transaction(CloseSettings)
+  let tx = Transaction {
+        ..tx_without_value,
+        mint: 
           assets.from_asset(
             mocks.settings_nft_policy,
             mocks.settings_token_name,
             1,
           ),
-        ),
-      },
-    }
-  expect Some(script_input) = head(ctx.transaction.inputs)
+      }
+  expect Some(script_input) = head(tx.inputs)
   let datum: SettingsDatum = to_settings_datum(script_input.output.datum)
 
   let output =
@@ -137,10 +128,10 @@ test without_settings_token_burn() {
       datum: NoDatum,
       reference_script: None,
     }
-  let script_ctx =
-    ctx
+  let tx =
+    tx
       |> add_output(output)
       |> add_extra_signature(mocks.githoney_addr)
 
-  !close_settings(datum, script_ctx)
+  !githoney_contract.settings.spend(Some(datum), CloseSettings, script_input.output_reference, tx)
 }

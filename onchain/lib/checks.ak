@@ -3,11 +3,12 @@ use aiken/interval.{Finite}
 use aiken/option.{is_none, is_some}
 use cardano/address.{Address, Credential, VerificationKey}
 use cardano/assets.{
-  Value, from_asset, from_lovelace, is_zero, merge, negate, quantity_of,
+  PolicyId, Value, from_asset, from_lovelace, is_zero, merge, negate,
+  quantity_of,
 }
 use cardano/transaction.{Output, Transaction}
-use types.{GithoneyDatum}
-use utils.{min_ada}
+use types.{GithoneyDatum, SettingsDatum}
+use utils.{min_ada, settings_token_name, to_settings_datum}
 
 pub fn is_signed_by(transaction: Transaction, verification_key: Credential) {
   expect VerificationKey(vk) = verification_key
@@ -76,5 +77,19 @@ pub fn utxo_at_paid_to_address(outputs: List<Output>, address: Address, at: Int)
     output
   } else {
     fail @"address missmatch"
+  }
+}
+
+pub fn reference_input_settings_with_NFT(
+  tx: Transaction,
+  settings_policy_id: PolicyId,
+) -> SettingsDatum {
+  expect [ref_input] = tx.reference_inputs
+  let has_settings_policy =
+    quantity_of(ref_input.output.value, settings_policy_id, settings_token_name) == 1
+  if !has_settings_policy {
+    fail @"There should be exactly one settings NFT in the reference input"
+  } else {
+    to_settings_datum(ref_input.output.datum)
   }
 }
