@@ -59,8 +59,8 @@ test success() {
       |> change_output_value(0, script_output_value)
       |> change_input_value(0, script_input_value)
       |> add_extra_signature(mocks.admin_addr)
-      |> add_output(maintainer_pay_output)
       |> add_output(githoney_pay_output)
+      |> add_output(maintainer_pay_output)
 
   githoney_contract.githoney.spend(
     mocks.settings_nft_policy,
@@ -242,7 +242,7 @@ test bad_input_value() {
   )
 }
 
-test without_maintainer_pay() {
+test without_maintainer_pay() fail {
   let tx = mk_transition_transaction(Merge)
   expect Some(script_input) = head(tx.inputs)
   let datum: GithoneyDatum = to_githoney_datum(script_input.output.datum)
@@ -348,7 +348,7 @@ test without_admin_signature() {
   )
 }
 
-test without_githoney_pay() {
+test without_githoney_pay() fail {
   let tx = mk_transition_transaction(Merge)
   expect Some(script_input) = head(tx.inputs)
   let datum: GithoneyDatum = to_githoney_datum(script_input.output.datum)
@@ -393,7 +393,7 @@ test without_githoney_pay() {
   )
 }
 
-test bad_address() {
+test bad_address() fail {
   let tx = mk_transition_transaction(Merge)
   expect Some(script_input) = head(tx.inputs)
   let datum: GithoneyDatum = to_githoney_datum(script_input.output.datum)

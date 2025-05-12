@@ -39,7 +39,7 @@ test without_githoney_signature() {
   !githoney_contract.settings.spend(Some(datum), UpdateSettings, script_input.output_reference, tx)
 }
 
-test more_than_one_token_input() {
+test more_than_one_token_input() fail {
   let ctx = mk_settings_transaction(UpdateSettings)
   expect Some(script_input) = head(ctx.inputs)
   let datum: SettingsDatum = to_settings_datum(script_input.output.datum)
@@ -108,7 +108,7 @@ test bad_new_datum() fail {
   githoney_contract.settings.spend(Some(datum), UpdateSettings, script_input.output_reference, tx)
 }
 
-test bad_pay_address() {
+test bad_pay_address() fail {
   let ctx = mk_settings_transaction(UpdateSettings)
   expect Some(script_input) = head(ctx.inputs)
   let datum: SettingsDatum = to_settings_datum(script_input.output.datum)

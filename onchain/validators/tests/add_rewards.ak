@@ -5,7 +5,7 @@ use githoney_contract
 use mocks.{token_a_policy, token_b_policy, token_c_policy}
 use test_utils.{
   change_output_value, change_script_upper_bound, mk_transition_transaction,
-  script_input_without_bounty_id_token,
+  script_input_without_bounty_id_token, script_input_with_two_bounty_id_token, add_input
 }
 use types.{AddRewards, GithoneyDatum}
 use utils.{to_githoney_datum}
@@ -84,6 +84,20 @@ test without_bounty_id_token() fail {
   githoney_contract.githoney.spend(mocks.settings_nft_policy, Some(datum), AddRewards, script_input.output_reference, tx)
 }
 
+test two_bounty_id_tokens() fail {
+  let tx = mk_transition_transaction(AddRewards)
+  expect Some(script_output) = head(tx.outputs)
+  let script_output_value =
+    script_output.value |> add(mocks.token_b_policy, mocks.token_b_name, 10000)
+  let tx =
+    tx
+      |> change_output_value(0, script_output_value)
+      |> script_input_with_two_bounty_id_token()
+  expect Some(script_input) = head(tx.inputs)
+  let datum: GithoneyDatum = to_githoney_datum(script_input.output.datum)
+  githoney_contract.githoney.spend(mocks.settings_nft_policy, Some(datum), AddRewards, script_input.output_reference, tx)
+}
+
 test already_merged_datum() {
   let tx = mk_transition_transaction(AddRewards)
   expect Some(script_output) = head(tx.outputs)
@@ -105,4 +119,15 @@ test too_many_tokens() {
   expect Some(script_input) = head(tx.inputs)
   let datum: GithoneyDatum = to_githoney_datum(script_input.output.datum)
   !githoney_contract.githoney.spend(mocks.settings_nft_policy, Some(datum), AddRewards, script_input.output_reference, tx)
+}
+
+test two_script_inputs() fail {
+  let tx = mk_transition_transaction(AddRewards)
+  expect Some(script_output) = head(tx.outputs)
+  let script_output_value =
+    script_output.value |> add(mocks.token_b_policy, mocks.token_b_name, 10000)
+  expect Some(script_input) = head(tx.inputs)
+  let tx = tx |> change_output_value(0, script_output_value) |> add_input(script_input)
+  let datum: GithoneyDatum = to_githoney_datum(script_input.output.datum)
+  githoney_contract.githoney.spend(mocks.settings_nft_policy, Some(datum), AddRewards, script_input.output_reference, tx)
 }

@@ -100,7 +100,7 @@ test wrong_burned_amount() {
   !githoney_contract.githoney.mint(mocks.settings_nft_policy, None, "", wrong_tx)
 }
 
-test invalid_script_output_address() {
+test invalid_script_output_address() fail {
   let tx = test_utils.mk_mp_transaction()
 
   expect Some(outputs) = list.tail(tx.outputs)

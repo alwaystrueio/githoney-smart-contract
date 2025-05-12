@@ -6,9 +6,8 @@ use cardano/assets.{
   AssetName, PolicyId, Value, flatten, from_asset, from_lovelace, merge,
   quantity_of, reduce, tokens, zero,
 }
-use cardano/script_context.{ScriptContext}
 use cardano/transaction.{
-  Datum, InlineDatum, Input, Output, OutputReference, Spend, Transaction,
+  Datum, InlineDatum, Input, Output, OutputReference, Transaction,
 }
 use types.{GithoneyDatum, SettingsDatum, TokenInfo}
 

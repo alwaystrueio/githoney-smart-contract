@@ -6,10 +6,9 @@ use aiken/option
 use aiken/primitive/bytearray
 use cardano/address.{Address}
 use cardano/assets.{Value}
-use cardano/script_context.{ScriptContext}
 use cardano/transaction.{
   InlineDatum, Input, Mint, NoDatum, Output, OutputReference, Redeemer,
-  ScriptPurpose, Spend, Transaction, TransactionId,
+  ScriptPurpose, Spend, Transaction,
 }
 use mocks
 use types.{GithoneyDatum}
@@ -66,6 +65,10 @@ pub fn add_output(tx: Transaction, output: Output) {
   Transaction { ..tx, outputs: concat(tx.outputs, [output]) }
 }
 
+pub fn add_input(tx: Transaction, input: Input) {
+  Transaction { ..tx, inputs: concat(tx.inputs, [input]) }
+}
+
 pub fn input_with_assets(
   transaction_id: ByteArray,
   output_index: Int,
@@ -112,6 +115,16 @@ pub fn script_input_without_bounty_id_token(tx: Transaction) {
     assets.merge(
       script_input.output.value,
       assets.from_asset(mocks.bounty_id_policy, mocks.bounty_id_name, -1),
+    )
+  change_input_value(tx, 0, new_value)
+}
+
+pub fn script_input_with_two_bounty_id_token(tx: Transaction) {
+  expect Some(script_input) = head(tx.inputs)
+  let new_value =
+    assets.merge(
+      script_input.output.value,
+      assets.from_asset(mocks.bounty_id_policy, mocks.bounty_id_name, 1),
     )
   change_input_value(tx, 0, new_value)
 }

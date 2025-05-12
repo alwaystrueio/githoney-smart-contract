@@ -2,7 +2,7 @@ use aiken/collection/dict
 use aiken/collection/list
 use aiken/option.{is_none, is_some}
 use cardano/address.{from_script, Script}
-use cardano/assets.{AssetName, PolicyId, flatten, from_lovelace, quantity_of, tokens}
+use cardano/assets.{PolicyId, flatten, from_lovelace, quantity_of, tokens}
 use cardano/transaction.{Datum, OutputReference, Redeemer, Transaction, InlineDatum}
 use checks.{
   is_assign_datum_valid, is_merge_datum_valid, is_signed_by,
@@ -15,7 +15,7 @@ use types.{
 }
 use utils.{
   get_minting_info, max_amount_of_tokens_admiteed, merge_payments_parts, min_ada,
-  settings_token_name, to_githoney_datum, to_settings_datum, tokens_to_value,
+  settings_token_name, to_githoney_datum, tokens_to_value,
   value_grater_than, value_grater_than_or_equal, get_unique_script_input
 }
 
@@ -251,8 +251,8 @@ validator settings {
 }
 
 validator settings_minting(utxo_ref: OutputReference) {
-  mint(_redeemer: Redeemer, _minting_policy: PolicyId, tx: Transaction) {
-    let (settings_policy, _, minted_quantity) = get_minting_info(tx)
+  mint(_redeemer: Redeemer, settings_policy: PolicyId, tx: Transaction) {
+    let (_, _, minted_quantity) = get_minting_info(tx)
 
     let is_token_burned = minted_quantity == -1
     if is_token_burned {
@@ -278,7 +278,7 @@ validator settings_minting(utxo_ref: OutputReference) {
 }
 
 validator badges_policy(utxo_ref: OutputReference, nonce: Int) {
-  mint(_redeemer: Redeemer, minting_policy: PolicyId, tx: Transaction) {
+  mint(_redeemer: Redeemer, _minting_policy: PolicyId, tx: Transaction) {
     let is_outref_in_inputs =
       list.any(tx.inputs, fn(input) { input.output_reference == utxo_ref })
 
@@ -296,7 +296,7 @@ validator badges_contract(settings_policy_id: PolicyId) {
   spend(
     _datum: Option<Datum>,
     _redeemer: Redeemer,
-    input_ref: OutputReference,
+    _input_ref: OutputReference,
     tx: Transaction,
   ) {
     let settings_datum =

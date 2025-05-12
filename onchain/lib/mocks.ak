@@ -1,10 +1,10 @@
 use cardano/address.{Address, Script, VerificationKey}
 use cardano/assets.{ada_asset_name, ada_policy_id}
 use cardano/transaction.{
-  InlineDatum, Input, Output, OutputReference, TransactionId,
+  InlineDatum, Input, Output, OutputReference,
 }
 use types.{AssetClass, GithoneyDatum, SettingsDatum, TokenInfo}
-use utils.{min_ada, settings_token_name}
+use utils.{min_ada}
 
 // This module includes mock values for testing the main validator and minting policy.
 
@@ -113,7 +113,7 @@ pub fn mk_contributor_address() {
 
 pub fn mk_settings_address() {
   Address {
-    payment_credential: VerificationKey(settings_addr),
+    payment_credential: Script(settings_nft_policy),
     stake_credential: None,
   }
 }

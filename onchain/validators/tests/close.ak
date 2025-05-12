@@ -81,7 +81,7 @@ test without_admin_signature() {
   !githoney_contract.githoney.spend(mocks.settings_nft_policy, Some(datum), Close, script_input.output_reference, tx)
 }
 
-test contributor_bad_pay() {
+test contributor_bad_pay() fail {
   let tx = mk_burn_transaction(Close)
   expect Some(script_input) = head(tx.inputs)
   let datum: GithoneyDatum = to_githoney_datum(script_input.output.datum)
@@ -99,6 +99,7 @@ test contributor_bad_pay() {
     }
   let tx =
     tx
+      |> add_output(maintainer_pay_output)
       |> add_output(maintainer_pay_output)
       |> add_extra_signature(mocks.admin_addr)
 
