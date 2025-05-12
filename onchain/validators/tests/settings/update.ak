@@ -23,7 +23,12 @@ test success() {
       |> add_output(output)
       |> add_extra_signature(mocks.githoney_addr)
 
-  githoney_contract.settings.spend(Some(datum), UpdateSettings, script_input.output_reference, tx)
+  githoney_contract.settings.spend(
+    Some(datum),
+    UpdateSettings,
+    script_input.output_reference,
+    tx,
+  )
 }
 
 test without_githoney_signature() {
@@ -36,7 +41,12 @@ test without_githoney_signature() {
     ctx
       |> add_output(output)
 
-  !githoney_contract.settings.spend(Some(datum), UpdateSettings, script_input.output_reference, tx)
+  !githoney_contract.settings.spend(
+    Some(datum),
+    UpdateSettings,
+    script_input.output_reference,
+    tx,
+  )
 }
 
 test more_than_one_token_input() fail {
@@ -61,7 +71,12 @@ test more_than_one_token_input() fail {
       |> add_output(output)
       |> add_extra_signature(mocks.githoney_addr)
 
-  !githoney_contract.settings.spend(Some(datum), UpdateSettings, script_input.output_reference, tx)
+  !githoney_contract.settings.spend(
+    Some(datum),
+    UpdateSettings,
+    script_input.output_reference,
+    tx,
+  )
 }
 
 test without_settings_token_in_input() fail {
@@ -76,7 +91,12 @@ test without_settings_token_in_input() fail {
       |> add_extra_signature(mocks.githoney_addr)
       |> script_input_without_settings_nft()
 
-  githoney_contract.settings.spend(Some(datum), UpdateSettings, script_input.output_reference, tx)
+  githoney_contract.settings.spend(
+    Some(datum),
+    UpdateSettings,
+    script_input.output_reference,
+    tx,
+  )
 }
 
 test without_settings_token_in_output() {
@@ -91,7 +111,12 @@ test without_settings_token_in_output() {
       |> add_output(wrong_output)
       |> add_extra_signature(mocks.githoney_addr)
 
-  !githoney_contract.settings.spend(Some(datum), UpdateSettings, script_input.output_reference, tx)
+  !githoney_contract.settings.spend(
+    Some(datum),
+    UpdateSettings,
+    script_input.output_reference,
+    tx,
+  )
 }
 
 test bad_new_datum() fail {
@@ -105,7 +130,12 @@ test bad_new_datum() fail {
       |> add_output(output)
       |> add_extra_signature(mocks.githoney_addr)
 
-  githoney_contract.settings.spend(Some(datum), UpdateSettings, script_input.output_reference, tx)
+  githoney_contract.settings.spend(
+    Some(datum),
+    UpdateSettings,
+    script_input.output_reference,
+    tx,
+  )
 }
 
 test bad_pay_address() fail {
@@ -120,5 +150,10 @@ test bad_pay_address() fail {
       |> add_output(output)
       |> add_extra_signature(mocks.githoney_addr)
 
-  !githoney_contract.settings.spend(Some(datum), UpdateSettings, script_input.output_reference, tx)
+  !githoney_contract.settings.spend(
+    Some(datum),
+    UpdateSettings,
+    script_input.output_reference,
+    tx,
+  )
 }

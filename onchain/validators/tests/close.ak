@@ -4,8 +4,8 @@ use cardano/transaction.{NoDatum, Output, Transaction}
 use githoney_contract
 use mocks
 use test_utils.{
-  add_extra_signature, add_output, mk_burn_transaction,
-  remove_mint_from_context, script_input_without_bounty_id_token,
+  add_extra_signature, add_output, mk_burn_transaction, remove_mint_from_context,
+  script_input_without_bounty_id_token,
 }
 use types.{Close, GithoneyDatum}
 use utils.{min_ada, to_githoney_datum}
@@ -27,7 +27,13 @@ test success() {
       |> add_output(output)
       |> add_extra_signature(mocks.admin_addr)
 
-  githoney_contract.githoney.spend(mocks.settings_nft_policy, Some(datum), Close, script_input.output_reference, tx)
+  githoney_contract.githoney.spend(
+    mocks.settings_nft_policy,
+    Some(datum),
+    Close,
+    script_input.output_reference,
+    tx,
+  )
 }
 
 test success_with_contributor() {
@@ -60,7 +66,13 @@ test success_with_contributor() {
       |> add_output(contributor_pay_output)
       |> add_extra_signature(mocks.admin_addr)
 
-  githoney_contract.githoney.spend(mocks.settings_nft_policy, Some(input_datum), Close, script_input.output_reference, tx)
+  githoney_contract.githoney.spend(
+    mocks.settings_nft_policy,
+    Some(input_datum),
+    Close,
+    script_input.output_reference,
+    tx,
+  )
 }
 
 test without_admin_signature() {
@@ -78,7 +90,13 @@ test without_admin_signature() {
     tx
       |> add_output(output)
 
-  !githoney_contract.githoney.spend(mocks.settings_nft_policy, Some(datum), Close, script_input.output_reference, tx)
+  !githoney_contract.githoney.spend(
+    mocks.settings_nft_policy,
+    Some(datum),
+    Close,
+    script_input.output_reference,
+    tx,
+  )
 }
 
 test contributor_bad_pay() fail {
@@ -103,7 +121,13 @@ test contributor_bad_pay() fail {
       |> add_output(maintainer_pay_output)
       |> add_extra_signature(mocks.admin_addr)
 
-  !githoney_contract.githoney.spend(mocks.settings_nft_policy, Some(input_datum), Close, script_input.output_reference, tx)
+  !githoney_contract.githoney.spend(
+    mocks.settings_nft_policy,
+    Some(input_datum),
+    Close,
+    script_input.output_reference,
+    tx,
+  )
 }
 
 test maintainer_bad_pay() {
@@ -122,7 +146,13 @@ test maintainer_bad_pay() {
       |> add_output(output)
       |> add_extra_signature(mocks.admin_addr)
 
-  !githoney_contract.githoney.spend(mocks.settings_nft_policy, Some(datum), Close, script_input.output_reference, tx)
+  !githoney_contract.githoney.spend(
+    mocks.settings_nft_policy,
+    Some(datum),
+    Close,
+    script_input.output_reference,
+    tx,
+  )
 }
 
 test without_bounty_id_token() fail {
@@ -142,7 +172,13 @@ test without_bounty_id_token() fail {
       |> add_extra_signature(mocks.admin_addr)
       |> script_input_without_bounty_id_token()
 
-  githoney_contract.githoney.spend(mocks.settings_nft_policy, Some(datum), Close, script_input.output_reference, tx)
+  githoney_contract.githoney.spend(
+    mocks.settings_nft_policy,
+    Some(datum),
+    Close,
+    script_input.output_reference,
+    tx,
+  )
 }
 
 test without_bounty_id_token_burn() fail {
@@ -162,7 +198,13 @@ test without_bounty_id_token_burn() fail {
       |> add_extra_signature(mocks.admin_addr)
       |> remove_mint_from_context()
 
-  githoney_contract.githoney.spend(mocks.settings_nft_policy, Some(datum), Close, script_input.output_reference, tx)
+  githoney_contract.githoney.spend(
+    mocks.settings_nft_policy,
+    Some(datum),
+    Close,
+    script_input.output_reference,
+    tx,
+  )
 }
 
 test already_merged_datum() {
@@ -183,5 +225,11 @@ test already_merged_datum() {
       |> add_output(output)
       |> add_extra_signature(mocks.admin_addr)
 
-  !githoney_contract.githoney.spend(mocks.settings_nft_policy, Some(input_datum), Close, script_input.output_reference, tx)
+  !githoney_contract.githoney.spend(
+    mocks.settings_nft_policy,
+    Some(input_datum),
+    Close,
+    script_input.output_reference,
+    tx,
+  )
 }

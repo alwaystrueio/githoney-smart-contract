@@ -72,30 +72,6 @@ pub fn get_unique_script_input(
   }
 }
 
-// Returns the total value paid to an address by a pending transaction.
-// pub fn value_paid_to(wallet: Address, tx: Transaction) -> Value {
-//   let Address { payment_credential, stake_credential } = wallet
-//   let address =
-//     when stake_credential is {
-//       None -> address.from_verification_key(payment_credential)
-//       Some(stake_k) ->
-//         address.from_verification_key(payment_credential)
-//           |> address.with_delegation_key(stake_k)
-//     }
-
-//   list.reduce(
-//     tx.outputs,
-//     value.zero(),
-//     fn(acc, output) {
-//       if output.address == address {
-//         value.merge(acc, output.value)
-//       } else {
-//         acc
-//       }
-//     },
-//   )
-// }
-
 pub fn get_input_with_asset(
   inputs: List<Input>,
   policy_id: PolicyId,

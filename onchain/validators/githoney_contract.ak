@@ -1,22 +1,24 @@
 use aiken/collection/dict
 use aiken/collection/list
 use aiken/option.{is_none, is_some}
-use cardano/address.{from_script, Script}
+use cardano/address.{Script, from_script}
 use cardano/assets.{PolicyId, flatten, from_lovelace, quantity_of, tokens}
-use cardano/transaction.{Datum, OutputReference, Redeemer, Transaction, InlineDatum}
+use cardano/transaction.{
+  Datum, InlineDatum, OutputReference, Redeemer, Transaction,
+}
 use checks.{
   is_assign_datum_valid, is_merge_datum_valid, is_signed_by,
   is_tx_before_deadline, is_utxo_datum_valid, is_utxo_value_valid,
-  reference_input_settings_with_NFT, utxo_at_paid_to_address
+  reference_input_settings_with_NFT, utxo_at_paid_to_address,
 }
 use types.{
   AddRewards, Assign, Claim, Close, CloseSettings, GithoneyContractRedeemers,
   GithoneyDatum, Merge, SettingsDatum, SettingsRedeemers, UpdateSettings,
 }
 use utils.{
-  get_minting_info, max_amount_of_tokens_admiteed, merge_payments_parts, min_ada,
-  settings_token_name, to_githoney_datum, tokens_to_value,
-  value_grater_than, value_grater_than_or_equal, get_unique_script_input
+  get_minting_info, get_unique_script_input, max_amount_of_tokens_admiteed,
+  merge_payments_parts, min_ada, settings_token_name, to_githoney_datum,
+  tokens_to_value, value_grater_than, value_grater_than_or_equal,
 }
 
 validator githoney(settings_policy_id: PolicyId) {
@@ -248,6 +250,9 @@ validator settings {
     }
   }
 
+  else(_) {
+    fail
+  }
 }
 
 validator settings_minting(utxo_ref: OutputReference) {
@@ -275,6 +280,9 @@ validator settings_minting(utxo_ref: OutputReference) {
     }
   }
 
+  else(_) {
+    fail
+  }
 }
 
 validator badges_policy(utxo_ref: OutputReference, nonce: Int) {

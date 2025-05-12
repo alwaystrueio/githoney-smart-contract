@@ -1,8 +1,6 @@
 use cardano/address.{Address, Script, VerificationKey}
 use cardano/assets.{ada_asset_name, ada_policy_id}
-use cardano/transaction.{
-  InlineDatum, Input, Output, OutputReference,
-}
+use cardano/transaction.{InlineDatum, Input, Output, OutputReference}
 use types.{AssetClass, GithoneyDatum, SettingsDatum, TokenInfo}
 use utils.{min_ada}
 

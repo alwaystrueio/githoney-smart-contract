@@ -25,7 +25,13 @@ test success() {
 
   let tx = change_script_output_datum(tx, new_datum)
   let tx = change_output_value(tx, 0, script_output_value)
-  githoney_contract.githoney.spend(mocks.settings_nft_policy, Some(datum), Assign, script_input.output_reference, tx)
+  githoney_contract.githoney.spend(
+    mocks.settings_nft_policy,
+    Some(datum),
+    Assign,
+    script_input.output_reference,
+    tx,
+  )
 }
 
 test bad_datum() {
@@ -38,7 +44,13 @@ test bad_datum() {
     script_output.value |> add(ada_policy_id, ada_asset_name, min_ada)
   let tx = change_script_output_datum(tx, new_datum)
   let tx = change_output_value(tx, 0, script_output_value)
-  !githoney_contract.githoney.spend(mocks.settings_nft_policy, Some(datum), Assign, script_input.output_reference, tx)
+  !githoney_contract.githoney.spend(
+    mocks.settings_nft_policy,
+    Some(datum),
+    Assign,
+    script_input.output_reference,
+    tx,
+  )
 }
 
 test bad_output_value() {
@@ -55,7 +67,13 @@ test bad_output_value() {
     script_output.value |> add(ada_policy_id, ada_asset_name, 1000)
   let tx = change_script_output_datum(tx, new_datum)
   let tx = change_output_value(tx, 0, script_output_value)
-  !githoney_contract.githoney.spend(mocks.settings_nft_policy, Some(datum), Assign, script_input.output_reference, tx)
+  !githoney_contract.githoney.spend(
+    mocks.settings_nft_policy,
+    Some(datum),
+    Assign,
+    script_input.output_reference,
+    tx,
+  )
 }
 
 test after_deadline() {
@@ -73,7 +91,13 @@ test after_deadline() {
   let tx = change_script_output_datum(tx, new_datum)
   let tx = change_output_value(tx, 0, script_output_value)
   let tx = change_script_upper_bound(tx, datum.deadline + 1)
-  !githoney_contract.githoney.spend(mocks.settings_nft_policy, Some(datum), Assign, script_input.output_reference, tx)
+  !githoney_contract.githoney.spend(
+    mocks.settings_nft_policy,
+    Some(datum),
+    Assign,
+    script_input.output_reference,
+    tx,
+  )
 }
 
 test without_bounty_id_token() fail {
@@ -95,5 +119,11 @@ test without_bounty_id_token() fail {
       |> change_output_value(0, script_output_value)
       |> script_input_without_bounty_id_token()
 
-  githoney_contract.githoney.spend(mocks.settings_nft_policy, Some(datum), Assign, script_input.output_reference, tx)
+  githoney_contract.githoney.spend(
+    mocks.settings_nft_policy,
+    Some(datum),
+    Assign,
+    script_input.output_reference,
+    tx,
+  )
 }

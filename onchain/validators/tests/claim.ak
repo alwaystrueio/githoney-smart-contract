@@ -29,7 +29,13 @@ test success() {
     }
   let tx = add_output(tx, output)
 
-  githoney_contract.githoney.spend(mocks.settings_nft_policy, Some(input_datum), Claim, script_input.output_reference, tx)
+  githoney_contract.githoney.spend(
+    mocks.settings_nft_policy,
+    Some(input_datum),
+    Claim,
+    script_input.output_reference,
+    tx,
+  )
 }
 
 test not_merged() {
@@ -50,7 +56,13 @@ test not_merged() {
     }
   let tx = add_output(tx, output)
 
-  !githoney_contract.githoney.spend(mocks.settings_nft_policy, Some(input_datum), Claim, script_input.output_reference, tx)
+  !githoney_contract.githoney.spend(
+    mocks.settings_nft_policy,
+    Some(input_datum),
+    Claim,
+    script_input.output_reference,
+    tx,
+  )
 }
 
 test without_contributor() fail {
@@ -67,7 +79,13 @@ test without_contributor() fail {
     }
   let tx = add_output(tx, output)
 
-  githoney_contract.githoney.spend(mocks.settings_nft_policy, Some(input_datum), Claim, script_input.output_reference, tx)
+  githoney_contract.githoney.spend(
+    mocks.settings_nft_policy,
+    Some(input_datum),
+    Claim,
+    script_input.output_reference,
+    tx,
+  )
 }
 
 test contributor_bad_pay() {
@@ -89,7 +107,13 @@ test contributor_bad_pay() {
     }
   let tx = add_output(tx, output)
 
-  !githoney_contract.githoney.spend(mocks.settings_nft_policy, Some(input_datum), Claim, script_input.output_reference, tx)
+  !githoney_contract.githoney.spend(
+    mocks.settings_nft_policy,
+    Some(input_datum),
+    Claim,
+    script_input.output_reference,
+    tx,
+  )
 }
 
 test without_bounty_id_token() fail {
@@ -114,7 +138,13 @@ test without_bounty_id_token() fail {
       |> add_output(output)
       |> script_input_without_bounty_id_token()
 
-  githoney_contract.githoney.spend(mocks.settings_nft_policy, Some(input_datum), Claim, script_input.output_reference, tx)
+  githoney_contract.githoney.spend(
+    mocks.settings_nft_policy,
+    Some(input_datum),
+    Claim,
+    script_input.output_reference,
+    tx,
+  )
 }
 
 test without_bounty_id_token_burn() fail {
@@ -139,5 +169,11 @@ test without_bounty_id_token_burn() fail {
       |> add_output(output)
       |> remove_mint_from_context()
 
-  githoney_contract.githoney.spend(mocks.settings_nft_policy, Some(input_datum), Claim, script_input.output_reference, tx)
+  githoney_contract.githoney.spend(
+    mocks.settings_nft_policy,
+    Some(input_datum),
+    Claim,
+    script_input.output_reference,
+    tx,
+  )
 }
