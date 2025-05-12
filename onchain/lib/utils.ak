@@ -1,15 +1,15 @@
-use aiken/dict
-use aiken/list
+use aiken/collection/dict
+use aiken/collection/list
 use aiken/option
-use aiken/transaction.{
-  Datum, InlineDatum, Input, Output, ScriptContext, Spend, Transaction,
+use cardano/address.{Address, Script}
+use cardano/assets.{
+  AssetName, PolicyId, Value, flatten, from_asset, from_lovelace, merge,
+  quantity_of, reduce, tokens, zero,
 }
-use aiken/transaction/credential.{ScriptCredential}
-use aiken/transaction/value.{
-  AssetName, PolicyId, Value, from_asset, from_lovelace, merge, quantity_of,
-  reduce, tokens, zero,
+use cardano/transaction.{
+  Datum, InlineDatum, Input, Output, OutputReference, Transaction,
 }
-use types.{GithoneyDatum, SettingsDatum, TokenInfo, Wallet}
+use types.{GithoneyDatum, SettingsDatum, TokenInfo}
 
 pub const settings_token_name: ByteArray = "settingsNFT"
 
@@ -19,7 +19,7 @@ pub const max_amount_of_tokens_admiteed: Int = 15
 
 // Returns the minting information of a transaction.
 pub fn get_minting_info(tx: Transaction) -> (PolicyId, AssetName, Int) {
-  expect [info] = tx.mint |> value.from_minted_value |> value.flatten
+  expect [info] = tx.mint |> flatten
   info
 }
 
@@ -36,15 +36,10 @@ pub fn to_settings_datum(data: Data) -> SettingsDatum {
   settings_datum
 }
 
-pub fn get_first_output(ctx: ScriptContext) -> Output {
-  expect Some(capsule_utxo) = ctx.transaction.outputs |> list.head
-  capsule_utxo
-}
-
 // Verifies if an input UTxO belongs to a script.
 pub fn is_script_utxo(input: Input) -> Bool {
   when input.output.address.payment_credential is {
-    ScriptCredential(_) -> True
+    Script(_) -> True
     _ -> False
   }
 }
@@ -58,41 +53,23 @@ pub fn get_script_output(tx: Transaction) -> Output {
 /// Verifies if an output UTxO belongs to a script.
 pub fn is_output_script_utxo(output: Output) -> Bool {
   when output.address.payment_credential is {
-    ScriptCredential(_) -> True
+    Script(_) -> True
     _ -> False
   }
 }
 
-pub fn get_script_input(ctx: ScriptContext) -> Input {
-  expect Spend(my_output_reference) = ctx.purpose
-  expect Some(input) =
-    ctx.transaction.inputs
-      |> transaction.find_input(my_output_reference)
-  input
-}
-
-// Returns the total value paid to an address by a pending transaction.
-pub fn value_paid_to(wallet: Wallet, tx: Transaction) -> Value {
-  let Wallet { payment_key, stake_key } = wallet
-  let address =
-    when stake_key is {
-      None -> credential.from_verification_key(payment_key)
-      Some(stake_k) ->
-        credential.from_verification_key(payment_key)
-          |> credential.with_delegation_key(stake_k)
-    }
-
-  list.reduce(
-    tx.outputs,
-    value.zero(),
-    fn(acc, output) {
-      if output.address == address {
-        value.merge(acc, output.value)
-      } else {
-        acc
-      }
-    },
-  )
+pub fn get_unique_script_input(
+  output_reference: OutputReference,
+  inputs: List<Input>,
+) -> Input {
+  expect [input] =
+    inputs
+      |> list.filter(is_script_utxo)
+  if input.output_reference == output_reference {
+    input
+  } else {
+    fail @"The input does not coincide with the output reference"
+  }
 }
 
 pub fn get_input_with_asset(
@@ -150,30 +127,30 @@ pub fn merge_payments_parts(
   let (script_part, fee_part) =
     reward_value
       |> reduce(
-           (managment_assets, zero()),
-           fn(policy_id, token_name, quantity, acc) {
-             if policy_id == bounty_id_policy {
-               acc
-             } else {
-               let (reward, fee) = acc
-               let fee_amount = quantity * reward_fee / ( 100 * 100 )
-               let reward_amount = quantity - fee_amount
-               (
-                 merge(reward, from_asset(policy_id, token_name, reward_amount)),
-                 merge(fee, from_asset(policy_id, token_name, fee_amount)),
-               )
-             }
-           },
-         )
+          (managment_assets, zero),
+          fn(policy_id, token_name, quantity, acc) {
+            if policy_id == bounty_id_policy {
+              acc
+            } else {
+              let (reward, fee) = acc
+              let fee_amount = quantity * reward_fee / ( 100 * 100 )
+              let reward_amount = quantity - fee_amount
+              (
+                merge(reward, from_asset(policy_id, token_name, reward_amount)),
+                merge(fee, from_asset(policy_id, token_name, fee_amount)),
+              )
+            }
+          },
+        )
   (script_part, fee_part)
 }
 
 pub fn tokens_to_value(tokens: List<TokenInfo>) -> Value {
   list.reduce(
     tokens,
-    value.zero(),
+    zero,
     fn(acc, token) {
-      value.add(
+      assets.add(
         acc,
         token.asset.policy_id,
         token.asset.asset_name,

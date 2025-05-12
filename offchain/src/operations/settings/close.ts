@@ -30,9 +30,9 @@ async function closeSettings(
   const settingsDatum = await lucid.datumOf(settingsUtxo, SettingsDatum);
   const githoneyAddr = await keyPairsToAddress(
     lucid,
-    settingsDatum.githoney_wallet
+    settingsDatum.githoney_address
   );
-  const githoneyPkh = settingsDatum.githoney_wallet.paymentKey;
+  const githoneyPkh = settingsDatum.githoney_address.paymentKey;
 
   const githoneyPaymentAssets = clearZeroAssets({
     ...settingsUtxo.assets,

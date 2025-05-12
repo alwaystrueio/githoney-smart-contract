@@ -40,7 +40,7 @@ Additionally, global parameters of the validator (e.g. the GitHoney wallet, crea
 >
 > #### Datum
 >
-> - githoney_wallet: **Wallet**
+> - githoney_address: **Wallet**
 > - bounty_creation_fee: **Bigint**
 > - bounty_reward_fee: **Bigint**
 >

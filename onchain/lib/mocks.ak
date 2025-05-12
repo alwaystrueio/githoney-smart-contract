@@ -1,12 +1,8 @@
-use aiken/transaction.{
-  InlineDatum, Input, Output, OutputReference, TransactionId,
-}
-use aiken/transaction/credential.{
-  Address, ScriptCredential, VerificationKeyCredential,
-}
-use aiken/transaction/value.{ada_asset_name, ada_policy_id}
-use types.{AssetClass, GithoneyDatum, SettingsDatum, TokenInfo, Wallet}
-use utils.{min_ada, settings_token_name}
+use cardano/address.{Address, Script, VerificationKey}
+use cardano/assets.{ada_asset_name, ada_policy_id}
+use cardano/transaction.{InlineDatum, Input, Output, OutputReference}
+use types.{AssetClass, GithoneyDatum, SettingsDatum, TokenInfo}
+use utils.{min_ada}
 
 // This module includes mock values for testing the main validator and minting policy.
 
@@ -68,7 +64,10 @@ pub const reward_fee = 1000
 
 pub fn mk_settings_datum() {
   SettingsDatum {
-    githoney_wallet: Wallet { payment_key: githoney_addr, stake_key: None },
+    githoney_address: Address {
+      payment_credential: VerificationKey(githoney_addr),
+      stake_credential: None,
+    },
     bounty_creation_fee: 20000,
     bounty_reward_fee: reward_fee,
   }
@@ -84,67 +83,44 @@ pub fn mk_settings_datum() {
 
 pub fn mk_admin_address() {
   Address {
-    payment_credential: VerificationKeyCredential(admin_addr),
+    payment_credential: VerificationKey(admin_addr),
     stake_credential: None,
   }
 }
 
 pub fn mk_maintainer_address() {
   Address {
-    payment_credential: VerificationKeyCredential(maintainer_addr),
+    payment_credential: VerificationKey(maintainer_addr),
     stake_credential: None,
   }
 }
 
 pub fn mk_githoney_address() {
   Address {
-    payment_credential: VerificationKeyCredential(githoney_addr),
+    payment_credential: VerificationKey(githoney_addr),
     stake_credential: None,
   }
 }
 
 pub fn mk_contributor_address() {
   Address {
-    payment_credential: VerificationKeyCredential(contributor_addr),
+    payment_credential: VerificationKey(contributor_addr),
     stake_credential: None,
   }
 }
 
 pub fn mk_settings_address() {
   Address {
-    payment_credential: VerificationKeyCredential(settings_addr),
+    payment_credential: Script(settings_nft_policy),
     stake_credential: None,
   }
-}
-
-// ========================================
-// WALLETS
-// ========================================
-
-pub fn mk_contributor_wallet() {
-  Wallet { payment_key: contributor_addr, stake_key: None }
-}
-
-pub fn mk_admin_wallet() {
-  Wallet { payment_key: admin_addr, stake_key: None }
-}
-
-pub fn mk_maintainer_wallet() {
-  Wallet { payment_key: maintainer_addr, stake_key: None }
-}
-
-pub fn mk_githoney_wallet() {
-  Wallet { payment_key: githoney_addr, stake_key: None }
 }
 
 // ========================================
 // INPUTS
 // ========================================
 pub fn script_out_ref() {
-  OutputReference {
-    transaction_id: TransactionId { hash: transaction_id },
-    output_index: 1,
-  }
+  OutputReference { transaction_id, output_index: 1 }
 }
 
 pub fn mk_input_bounty_utxo() {
@@ -152,10 +128,7 @@ pub fn mk_input_bounty_utxo() {
 }
 
 pub fn mk_settings_out_ref() {
-  OutputReference {
-    transaction_id: TransactionId { hash: transaction_id_2 },
-    output_index: 0,
-  }
+  OutputReference { transaction_id: transaction_id_2, output_index: 0 }
 }
 
 pub fn mk_settings_input() {
@@ -171,17 +144,18 @@ pub fn mk_settings_input() {
 pub fn mk_output_bounty_utxo() {
   Output {
     address: Address {
-      payment_credential: ScriptCredential(bounty_id_policy),
+      payment_credential: Script(bounty_id_policy),
       stake_credential: None,
     },
-    value: value.from_lovelace(min_ada)
-      |> value.add(token_a_policy, token_a_name, reward_amount) // Reward token
-      |> value.add(bounty_id_policy, bounty_id_name, 1),
+    value: assets.from_lovelace(min_ada)
+      |> assets.add(token_a_policy, token_a_name, reward_amount)
+      // Reward token
+      |> assets.add(bounty_id_policy, bounty_id_name, 1),
     datum: InlineDatum(
       GithoneyDatum {
-        admin_wallet: mk_admin_wallet(),
-        maintainer_wallet: mk_maintainer_wallet(),
-        contributor_wallet: None,
+        admin_address: mk_admin_address(),
+        maintainer_address: mk_maintainer_address(),
+        contributor_address: None,
         bounty_reward_fee: reward_fee,
         deadline: 1718938800,
         merged: False,
@@ -210,8 +184,8 @@ pub fn mk_output_bounty_utxo() {
 pub fn mk_settings_output() {
   Output {
     address: mk_settings_address(),
-    value: value.from_lovelace(min_ada)
-      |> value.add(settings_nft_policy, settings_token_name, 1),
+    value: assets.from_lovelace(min_ada)
+      |> assets.add(settings_nft_policy, settings_token_name, 1),
     datum: InlineDatum(mk_settings_datum()),
     reference_script: None,
   }

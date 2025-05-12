@@ -37,9 +37,9 @@ async function updateSettings(
   const gitHoneyValidator = githoneyValidator(settingsPolicyId);
   const githoneyAddr = await keyPairsToAddress(
     lucid,
-    oldSettings.githoney_wallet
+    oldSettings.githoney_address
   );
-  const githoneyPkh = oldSettings.githoney_wallet.paymentKey;
+  const githoneyPkh = oldSettings.githoney_address.paymentKey;
   if (!settings) {
     settings = validatorSettings(lucid, githoneyAddr);
   } else {

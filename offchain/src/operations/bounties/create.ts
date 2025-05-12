@@ -72,7 +72,10 @@ async function createBounty(
   };
   const maintainerWallet = addrToWallet(maintainerAddr, lucid);
   const adminWallet = addrToWallet(adminAddr, lucid);
-  const githoneyAddr = await keyPairsToAddress(lucid, settings.githoney_wallet);
+  const githoneyAddr = await keyPairsToAddress(
+    lucid,
+    settings.githoney_address
+  );
 
   logger.info(`Maintainer Address ${maintainerAddr}`);
   logger.info(`Admin Address ${adminAddr}`);
