@@ -2,7 +2,9 @@ use aiken/collection/dict
 use aiken/collection/list
 use aiken/option.{is_none, is_some}
 use cardano/address.{Script, from_script}
-use cardano/assets.{PolicyId, flatten, from_lovelace, quantity_of, tokens}
+use cardano/assets.{
+  PolicyId, flatten, from_lovelace, lovelace_of, quantity_of, tokens,
+}
 use cardano/transaction.{
   Datum, InlineDatum, OutputReference, Redeemer, Transaction,
 }
@@ -184,10 +186,7 @@ validator githoney(settings_policy_id: PolicyId) {
       let is_minting_only_one_bounty_id_token = minted_quantity == 1
 
       let is_creation_fee_paid =
-        value_greater_than_or_equal(
-          githoney_output.value,
-          from_lovelace(settings_datum.bounty_creation_fee),
-        )
+        lovelace_of(githoney_output.value) >= settings_datum.bounty_creation_fee
 
       let valid_datum =
         is_utxo_datum_valid(settings_datum.bounty_reward_fee, tx, datum)
