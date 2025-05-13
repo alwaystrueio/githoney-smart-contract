@@ -100,10 +100,7 @@ validator githoney(settings_policy_id: PolicyId) {
         let is_reward_fee_payed =
           value_greater_than_or_equal(githoney_output.value, githoney_value)
         let is_signed_by_admin =
-          is_signed_by(
-            tx.extra_signatories,
-            datum.admin_address.payment_credential,
-          )
+          is_signed_by(tx.extra_signatories, datum.admin_payment_credential)
         let is_maintainer_minada_payed =
           value_greater_than_or_equal(
             maintainer_output.value,
@@ -140,10 +137,7 @@ validator githoney(settings_policy_id: PolicyId) {
           }
 
         let is_signed_by_admin =
-          is_signed_by(
-            tx.extra_signatories,
-            datum.admin_address.payment_credential,
-          )
+          is_signed_by(tx.extra_signatories, datum.admin_payment_credential)
         let is_bounty_id_token_burnt =
           minted_quantity == -1 && minted_name == bounty_id_name && policy_id == bounty_id_policy
         let is_datum_not_merged = !datum.merged

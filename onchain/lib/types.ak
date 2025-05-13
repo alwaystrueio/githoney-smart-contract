@@ -1,4 +1,4 @@
-use cardano/address.{Address}
+use cardano/address.{Address, Credential}
 use cardano/assets.{AssetName, PolicyId}
 
 pub type TokenInfo =
@@ -24,7 +24,7 @@ pub type SettingsDatum {
 }
 
 pub type GithoneyDatum {
-  admin_address: Address,
+  admin_payment_credential: Credential,
   maintainer_address: Address,
   contributor_address: Option<Address>,
   bounty_reward_fee: Int,

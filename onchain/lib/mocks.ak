@@ -78,7 +78,7 @@ pub fn mk_script_datum(value: Value) {
     value |> assets.add(bounty_id_policy, bounty_id_name, -1) |> assets.flatten
   InlineDatum(
     GithoneyDatum {
-      admin_address: mk_admin_address(),
+      admin_payment_credential: mk_admin_credential(),
       maintainer_address: mk_maintainer_address(),
       contributor_address: None,
       bounty_reward_fee: reward_fee,
@@ -102,6 +102,10 @@ pub fn mk_admin_address() {
     payment_credential: VerificationKey(admin_addr),
     stake_credential: None,
   }
+}
+
+pub fn mk_admin_credential() {
+  VerificationKey(admin_addr)
 }
 
 pub fn mk_maintainer_address() {
