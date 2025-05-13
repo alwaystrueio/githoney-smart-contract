@@ -251,15 +251,7 @@ validator settings {
             datum.githoney_address.payment_credential,
           )
 
-        let githoney_output =
-          utxo_at_paid_to_address(tx.outputs, datum.githoney_address, 0)
-        let is_githoney_pay_valid =
-          value_greater_than_or_equal(
-            githoney_output.value,
-            script_input.value
-              |> assets.add(settings_policy, settings_token_name, -1),
-          )
-        is_settings_policy_burnt? && is_signed? && is_githoney_pay_valid?
+        is_settings_policy_burnt? && is_signed?
       }
     }
   }
