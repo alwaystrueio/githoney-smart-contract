@@ -30,5 +30,5 @@ pub type GithoneyDatum {
   bounty_reward_fee: Int,
   deadline: Int,
   merged: Bool,
-  initial_value: List<TokenInfo>,
+  initial_value: Pairs<PolicyId, Pairs<AssetName, Int>>,
 }

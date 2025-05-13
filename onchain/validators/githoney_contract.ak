@@ -3,7 +3,8 @@ use aiken/collection/list
 use aiken/option.{is_none, is_some}
 use cardano/address.{Script, from_script}
 use cardano/assets.{
-  PolicyId, flatten, from_lovelace, lovelace_of, quantity_of, tokens,
+  PolicyId, flatten, from_asset_list, from_lovelace, lovelace_of, match,
+  quantity_of, tokens,
 }
 use cardano/transaction.{
   Datum, InlineDatum, OutputReference, Redeemer, Transaction,
@@ -20,7 +21,7 @@ use types.{
 use utils.{
   get_minting_info, get_unique_script_input, max_amount_of_tokens_admiteed,
   merge_payments_parts, min_ada, settings_token_name, to_githoney_datum,
-  tokens_to_value, value_greater_than, value_greater_than_or_equal,
+  value_greater_than, value_greater_than_or_equal,
 }
 
 validator githoney(settings_policy_id: PolicyId) {
@@ -66,7 +67,7 @@ validator githoney(settings_policy_id: PolicyId) {
         let is_new_datum_valid = is_assign_datum_valid(datum, new_datum)
         let expected_value =
           assets.merge(script_input.value, from_lovelace(min_ada))
-        let is_utxo_value_valid = script_output.value == expected_value
+        let is_utxo_value_valid = match(script_output.value, expected_value, ==)
 
         is_new_datum_valid? && is_utxo_value_valid? && is_tx_before_deadline? && contributor_isnt_assigned?
       }
@@ -96,7 +97,7 @@ validator githoney(settings_policy_id: PolicyId) {
             bounty_id_policy,
             bounty_id_name,
           )
-        let is_utxo_value_valid = script_output.value == script_value
+        let is_utxo_value_valid = match(script_output.value, script_value, ==)
         let is_reward_fee_payed =
           value_greater_than_or_equal(githoney_output.value, githoney_value)
         let is_signed_by_admin =
@@ -118,7 +119,7 @@ validator githoney(settings_policy_id: PolicyId) {
         let is_maintainer_pay_valid =
           value_greater_than_or_equal(
             maintainer_output.value,
-            tokens_to_value(datum.initial_value),
+            from_asset_list(datum.initial_value),
           )
         let are_payments_valid =
           when datum.contributor_address is {
@@ -188,9 +189,11 @@ validator githoney(settings_policy_id: PolicyId) {
         is_utxo_value_valid(own_policy, bounty_id, script_output.value)
 
       let valid_deposit =
-        tokens_to_value(datum.initial_value) == (
+        match(
+          from_asset_list(datum.initial_value),
           script_output.value
-            |> assets.add(own_policy, bounty_id, -1)
+            |> assets.add(own_policy, bounty_id, -1),
+          ==,
         )
 
       is_creation_fee_paid? && is_minting_only_one_bounty_id_token? && valid_datum? && valid_value? && valid_deposit?

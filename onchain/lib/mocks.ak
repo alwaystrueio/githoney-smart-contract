@@ -1,5 +1,7 @@
+use aiken/collection/dict.{to_pairs}
+use aiken/collection/list
 use cardano/address.{Address, Script, VerificationKey}
-use cardano/assets.{Value}
+use cardano/assets.{AssetName, PolicyId, Value, policies, tokens}
 use cardano/transaction.{InlineDatum, Input, Output, OutputReference}
 use types.{GithoneyDatum, SettingsDatum}
 use utils.{min_ada}
@@ -74,8 +76,20 @@ pub fn mk_settings_datum() {
 }
 
 pub fn mk_script_datum(value: Value) {
-  let initial_value =
-    value |> assets.add(bounty_id_policy, bounty_id_name, -1) |> assets.flatten
+  let initial_value = value |> assets.add(bounty_id_policy, bounty_id_name, -1)
+
+  let initial_value_pairs =
+    policies(initial_value)
+      |> list.foldl(
+          [],
+          fn(policy: PolicyId, acc: Pairs<PolicyId, Pairs<AssetName, Int>>) {
+            list.push(
+              acc,
+              Pair(policy, tokens(initial_value, policy) |> to_pairs),
+            )
+          },
+        )
+
   InlineDatum(
     GithoneyDatum {
       admin_payment_credential: mk_admin_credential(),
@@ -84,7 +98,7 @@ pub fn mk_script_datum(value: Value) {
       bounty_reward_fee: reward_fee,
       deadline: 1718938800,
       merged: False,
-      initial_value,
+      initial_value: initial_value_pairs,
     },
   )
 }

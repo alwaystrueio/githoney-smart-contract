@@ -9,7 +9,7 @@ use cardano/assets.{
 use cardano/transaction.{
   Datum, InlineDatum, Input, Output, OutputReference, Transaction,
 }
-use types.{GithoneyDatum, SettingsDatum, TokenInfo}
+use types.{GithoneyDatum, SettingsDatum}
 
 pub const settings_token_name: ByteArray = "settingsNFT"
 
@@ -174,12 +174,4 @@ pub fn merge_payments_parts(
           },
         )
   (script_part, fee_part)
-}
-
-pub fn tokens_to_value(tokens: List<TokenInfo>) -> Value {
-  list.reduce(
-    tokens,
-    zero,
-    fn(acc, token) { assets.add(acc, token.1st, token.2nd, token.3rd) },
-  )
 }
