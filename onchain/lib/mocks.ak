@@ -1,5 +1,5 @@
 use cardano/address.{Address, Script, VerificationKey}
-use cardano/assets.{ Value}
+use cardano/assets.{Value}
 use cardano/transaction.{InlineDatum, Input, Output, OutputReference}
 use types.{GithoneyDatum, SettingsDatum}
 use utils.{min_ada}
@@ -74,7 +74,8 @@ pub fn mk_settings_datum() {
 }
 
 pub fn mk_script_datum(value: Value) {
-  let initial_value = value |> assets.add(bounty_id_policy, bounty_id_name, -1) |> assets.flatten
+  let initial_value =
+    value |> assets.add(bounty_id_policy, bounty_id_name, -1) |> assets.flatten
   InlineDatum(
     GithoneyDatum {
       admin_address: mk_admin_address(),
@@ -83,7 +84,7 @@ pub fn mk_script_datum(value: Value) {
       bounty_reward_fee: reward_fee,
       deadline: 1718938800,
       merged: False,
-      initial_value: initial_value,
+      initial_value,
     },
   )
 }
@@ -157,7 +158,8 @@ pub fn mk_settings_input() {
 // OUTPUTS
 // ========================================
 pub fn mk_output_bounty_utxo() {
-  let value = assets.from_lovelace(min_ada)
+  let value =
+    assets.from_lovelace(min_ada)
       |> assets.add(token_a_policy, token_a_name, reward_amount)
       // Reward token
       |> assets.add(bounty_id_policy, bounty_id_name, 1)
@@ -166,7 +168,7 @@ pub fn mk_output_bounty_utxo() {
       payment_credential: Script(bounty_id_policy),
       stake_credential: None,
     },
-    value: value,
+    value,
     datum: mk_script_datum(value),
     reference_script: None,
   }

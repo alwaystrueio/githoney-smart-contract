@@ -3,8 +3,8 @@ use aiken/collection/list
 use aiken/option
 use cardano/address.{Address, Script}
 use cardano/assets.{
-  AssetName, PolicyId, Value, flatten, from_asset, from_lovelace, merge,
-  quantity_of, reduce, tokens, zero, match
+  AssetName, PolicyId, Value, flatten, from_asset, from_lovelace, match, merge,
+  quantity_of, reduce, tokens, zero,
 }
 use cardano/transaction.{
   Datum, InlineDatum, Input, Output, OutputReference, Transaction,
@@ -93,7 +93,7 @@ pub fn get_input_with_asset(
 
 pub fn value_greater_than(v1: Value, v2: Value) {
   let are_different = match(v1, v2, ==) |> not
-  let greater_or_equal= value_greater_than_or_equal(v1, v2)
+  let greater_or_equal = value_greater_than_or_equal(v1, v2)
 
   greater_or_equal? && are_different?
 }
@@ -114,7 +114,11 @@ pub fn value_greater_than_or_equal(v1: Value, v2: Value) {
 }
 
 test test_greater_than_with_more_policies() {
-  let v1 = merge(from_asset("policy2", "token2", 2), from_asset("policy1", "token1", 1))
+  let v1 =
+    merge(
+      from_asset("policy2", "token2", 2),
+      from_asset("policy1", "token1", 1),
+    )
   let v2 = from_asset("policy1", "token1", 1)
   True == value_greater_than(v1, v2)
 }
@@ -126,11 +130,18 @@ test test_greater_than_with_higher_quantities() {
 }
 
 test test_greater_than_with_incomparable_values() {
-  let v1 = merge(from_asset("policy2", "token2", 2), from_asset("policy1", "token1", 1))
-  let v2 = merge(from_asset("policy2", "token2", 2), from_asset("policy3", "token3", 1))
+  let v1 =
+    merge(
+      from_asset("policy2", "token2", 2),
+      from_asset("policy1", "token1", 1),
+    )
+  let v2 =
+    merge(
+      from_asset("policy2", "token2", 2),
+      from_asset("policy3", "token3", 1),
+    )
   False == value_greater_than(v1, v2)
 }
-
 
 pub fn merge_payments_parts(
   reward_fee: Int,
@@ -169,13 +180,6 @@ pub fn tokens_to_value(tokens: List<TokenInfo>) -> Value {
   list.reduce(
     tokens,
     zero,
-    fn(acc, token) {
-      assets.add(
-        acc,
-        token.1st,
-        token.2nd,
-        token.3rd,
-      )
-    },
+    fn(acc, token) { assets.add(acc, token.1st, token.2nd, token.3rd) },
   )
 }

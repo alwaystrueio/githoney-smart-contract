@@ -3,10 +3,7 @@ use aiken/crypto.{VerificationKeyHash}
 use aiken/interval.{Finite}
 use aiken/option.{is_none, is_some}
 use cardano/address.{Address, Credential, VerificationKey}
-use cardano/assets.{
-  PolicyId, Value, from_lovelace,
-  quantity_of, add
-}
+use cardano/assets.{PolicyId, Value, add, from_lovelace, quantity_of}
 use cardano/transaction.{Output, Transaction, ValidityRange}
 use types.{GithoneyDatum, SettingsDatum}
 use utils.{min_ada, settings_token_name, to_settings_datum, value_greater_than}

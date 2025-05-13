@@ -169,12 +169,12 @@ validator githoney(settings_policy_id: PolicyId) {
   }
 
   mint(_redeemer: Redeemer, _minting_policy: PolicyId, tx: Transaction) {
-    let settings_datum =
-      reference_input_settings_with_NFT(tx, settings_policy_id)
     let (own_policy, bounty_id, minted_quantity) = get_minting_info(tx)
     if minted_quantity == -1 {
       True
     } else {
+      let settings_datum =
+        reference_input_settings_with_NFT(tx, settings_policy_id)
       let script_output =
         utxo_at_paid_to_address(tx.outputs, from_script(own_policy), 0)
       let githoney_output =
