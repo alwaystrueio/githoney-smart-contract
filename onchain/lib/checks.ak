@@ -43,13 +43,6 @@ pub fn is_tx_before_deadline(validity_range: ValidityRange, deadline: Int) {
   }
 }
 
-pub fn is_tx_after_deadline(validity_range: ValidityRange, deadline: Int) {
-  when validity_range.lower_bound.bound_type is {
-    Finite(tx_lower_bound) -> deadline <= tx_lower_bound
-    _ -> False
-  }
-}
-
 pub fn is_assign_datum_valid(old_datum: GithoneyDatum, new_datum: GithoneyDatum) {
   let expected_datum =
     GithoneyDatum {
