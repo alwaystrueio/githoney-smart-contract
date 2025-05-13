@@ -1,7 +1,7 @@
 use cardano/address.{Address, Script, VerificationKey}
-use cardano/assets.{ada_asset_name, ada_policy_id}
+use cardano/assets.{ Value}
 use cardano/transaction.{InlineDatum, Input, Output, OutputReference}
-use types.{AssetClass, GithoneyDatum, SettingsDatum, TokenInfo}
+use types.{GithoneyDatum, SettingsDatum}
 use utils.{min_ada}
 
 // This module includes mock values for testing the main validator and minting policy.
@@ -73,6 +73,21 @@ pub fn mk_settings_datum() {
   }
 }
 
+pub fn mk_script_datum(value: Value) {
+  let initial_value = value |> assets.add(bounty_id_policy, bounty_id_name, -1) |> assets.flatten
+  InlineDatum(
+    GithoneyDatum {
+      admin_address: mk_admin_address(),
+      maintainer_address: mk_maintainer_address(),
+      contributor_address: None,
+      bounty_reward_fee: reward_fee,
+      deadline: 1718938800,
+      merged: False,
+      initial_value: initial_value,
+    },
+  )
+}
+
 // ====================
 // MOCK DATA GENERATION
 // ====================
@@ -142,41 +157,17 @@ pub fn mk_settings_input() {
 // OUTPUTS
 // ========================================
 pub fn mk_output_bounty_utxo() {
+  let value = assets.from_lovelace(min_ada)
+      |> assets.add(token_a_policy, token_a_name, reward_amount)
+      // Reward token
+      |> assets.add(bounty_id_policy, bounty_id_name, 1)
   Output {
     address: Address {
       payment_credential: Script(bounty_id_policy),
       stake_credential: None,
     },
-    value: assets.from_lovelace(min_ada)
-      |> assets.add(token_a_policy, token_a_name, reward_amount)
-      // Reward token
-      |> assets.add(bounty_id_policy, bounty_id_name, 1),
-    datum: InlineDatum(
-      GithoneyDatum {
-        admin_address: mk_admin_address(),
-        maintainer_address: mk_maintainer_address(),
-        contributor_address: None,
-        bounty_reward_fee: reward_fee,
-        deadline: 1718938800,
-        merged: False,
-        initial_value: [
-          TokenInfo {
-            asset: AssetClass {
-              policy_id: ada_policy_id,
-              asset_name: ada_asset_name,
-            },
-            amount: min_ada,
-          },
-          TokenInfo {
-            asset: AssetClass {
-              policy_id: token_a_policy,
-              asset_name: token_a_name,
-            },
-            amount: reward_amount,
-          },
-        ],
-      },
-    ),
+    value: value,
+    datum: mk_script_datum(value),
     reference_script: None,
   }
 }

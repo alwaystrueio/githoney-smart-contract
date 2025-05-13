@@ -18,7 +18,7 @@ use types.{
 use utils.{
   get_minting_info, get_unique_script_input, max_amount_of_tokens_admiteed,
   merge_payments_parts, min_ada, settings_token_name, to_githoney_datum,
-  tokens_to_value, value_grater_than, value_grater_than_or_equal,
+  tokens_to_value, value_greater_than, value_greater_than_or_equal,
 }
 
 validator githoney(settings_policy_id: PolicyId) {
@@ -42,10 +42,11 @@ validator githoney(settings_policy_id: PolicyId) {
           utxo_at_paid_to_address(tx.outputs, script_input.address, 0)
         let new_datum = to_githoney_datum(script_output.datum)
 
-        let is_tx_before_deadline = is_tx_before_deadline(tx.validity_range, datum.deadline)
+        let is_tx_before_deadline =
+          is_tx_before_deadline(tx.validity_range, datum.deadline)
         let is_datum_the_same = datum == new_datum
         let is_value_grater_than_before =
-          value_grater_than(script_output.value, script_input.value)
+          value_greater_than(script_output.value, script_input.value)
         let is_datum_not_merged = !datum.merged
         let are_policies_less_than =
           list.length(flatten(script_output.value)) <= max_amount_of_tokens_admiteed
@@ -57,7 +58,8 @@ validator githoney(settings_policy_id: PolicyId) {
           utxo_at_paid_to_address(tx.outputs, script_input.address, 0)
         let new_datum = to_githoney_datum(script_output.datum)
 
-        let is_tx_before_deadline = is_tx_before_deadline(tx.validity_range, datum.deadline)
+        let is_tx_before_deadline =
+          is_tx_before_deadline(tx.validity_range, datum.deadline)
         let contributor_isnt_assigned = is_none(datum.contributor_address)
         let is_new_datum_valid = is_assign_datum_valid(datum, new_datum)
         let expected_value =
@@ -81,7 +83,8 @@ validator githoney(settings_policy_id: PolicyId) {
           utxo_at_paid_to_address(tx.outputs, datum.maintainer_address, 2)
         let new_datum = to_githoney_datum(script_output.datum)
 
-        let is_tx_before_deadline = is_tx_before_deadline(tx.validity_range, datum.deadline)
+        let is_tx_before_deadline =
+          is_tx_before_deadline(tx.validity_range, datum.deadline)
         let contributor_is_assigned = is_some(datum.contributor_address)
         let is_new_datum_valid = is_merge_datum_valid(datum, new_datum)
         let (script_value, githoney_value) =
@@ -93,11 +96,14 @@ validator githoney(settings_policy_id: PolicyId) {
           )
         let is_utxo_value_valid = script_output.value == script_value
         let is_reward_fee_payed =
-          value_grater_than_or_equal(githoney_output.value, githoney_value)
+          value_greater_than_or_equal(githoney_output.value, githoney_value)
         let is_signed_by_admin =
-          is_signed_by(tx.extra_signatories, datum.admin_address.payment_credential)
+          is_signed_by(
+            tx.extra_signatories,
+            datum.admin_address.payment_credential,
+          )
         let is_maintainer_minada_payed =
-          value_grater_than_or_equal(
+          value_greater_than_or_equal(
             maintainer_output.value,
             from_lovelace(min_ada),
           )
@@ -111,7 +117,7 @@ validator githoney(settings_policy_id: PolicyId) {
           utxo_at_paid_to_address(tx.outputs, datum.maintainer_address, 0)
 
         let is_maintainer_pay_valid =
-          value_grater_than_or_equal(
+          value_greater_than_or_equal(
             maintainer_output.value,
             tokens_to_value(datum.initial_value),
           )
@@ -121,7 +127,7 @@ validator githoney(settings_policy_id: PolicyId) {
               let contributor_output =
                 utxo_at_paid_to_address(tx.outputs, contributor_address, 1)
               let is_contributor_pay_valid =
-                value_grater_than_or_equal(
+                value_greater_than_or_equal(
                   contributor_output.value,
                   from_lovelace(min_ada),
                 )
@@ -132,7 +138,10 @@ validator githoney(settings_policy_id: PolicyId) {
           }
 
         let is_signed_by_admin =
-          is_signed_by(tx.extra_signatories, datum.admin_address.payment_credential)
+          is_signed_by(
+            tx.extra_signatories,
+            datum.admin_address.payment_credential,
+          )
         let is_bounty_id_token_burnt =
           minted_quantity == -1 && minted_name == bounty_id_name && policy_id == bounty_id_policy
         let is_datum_not_merged = !datum.merged
@@ -146,7 +155,7 @@ validator githoney(settings_policy_id: PolicyId) {
 
         let (policy_id, minted_name, minted_quantity) = get_minting_info(tx)
         let is_contributor_pay_valid =
-          value_grater_than_or_equal(
+          value_greater_than_or_equal(
             contributor_utxo.value,
             script_input.value
               |> assets.add(bounty_id_policy, bounty_id_name, -1),
@@ -175,7 +184,7 @@ validator githoney(settings_policy_id: PolicyId) {
       let is_minting_only_one_bounty_id_token = minted_quantity == 1
 
       let is_creation_fee_paid =
-        value_grater_than_or_equal(
+        value_greater_than_or_equal(
           githoney_output.value,
           from_lovelace(settings_datum.bounty_creation_fee),
         )
@@ -217,7 +226,10 @@ validator settings {
     when redeemer is {
       UpdateSettings -> {
         let is_signed =
-          is_signed_by(tx.extra_signatories, datum.githoney_address.payment_credential)
+          is_signed_by(
+            tx.extra_signatories,
+            datum.githoney_address.payment_credential,
+          )
 
         let script_output =
           utxo_at_paid_to_address(tx.outputs, script_input.address, 0)
@@ -235,12 +247,15 @@ validator settings {
         let is_settings_policy_burnt =
           minted_quantity == -1 && minted_name == settings_token_name && policy_id == settings_policy
         let is_signed =
-          is_signed_by(tx.extra_signatories, datum.githoney_address.payment_credential)
+          is_signed_by(
+            tx.extra_signatories,
+            datum.githoney_address.payment_credential,
+          )
 
         let githoney_output =
           utxo_at_paid_to_address(tx.outputs, datum.githoney_address, 0)
         let is_githoney_pay_valid =
-          value_grater_than_or_equal(
+          value_greater_than_or_equal(
             githoney_output.value,
             script_input.value
               |> assets.add(settings_policy, settings_token_name, -1),
@@ -310,7 +325,10 @@ validator badges_contract(settings_policy_id: PolicyId) {
     let settings_datum =
       reference_input_settings_with_NFT(tx, settings_policy_id)
     let is_signed_by_githoney =
-      is_signed_by(tx.extra_signatories, settings_datum.githoney_address.payment_credential)
+      is_signed_by(
+        tx.extra_signatories,
+        settings_datum.githoney_address.payment_credential,
+      )
     is_signed_by_githoney
   }
 

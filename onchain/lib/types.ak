@@ -1,15 +1,8 @@
 use cardano/address.{Address}
 use cardano/assets.{AssetName, PolicyId}
 
-pub type AssetClass {
-  policy_id: PolicyId,
-  asset_name: AssetName,
-}
 
-pub type TokenInfo {
-  asset: AssetClass,
-  amount: Int,
-}
+pub type TokenInfo = (PolicyId, AssetName, Int)
 
 pub type GithoneyContractRedeemers {
   AddRewards
