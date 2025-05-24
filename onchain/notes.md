@@ -70,6 +70,14 @@ there_are_some_reward
 |> merge(from_asset(policy_id, bounty_id, 1))
 ```
 
+### Note 5 (Lines 50-50)
+
+! This is not used!
+
+```
+is_tx_after_deadline
+```
+
 ## lib/utils.ak
 
 ### Note 1 (Lines 22-22)
