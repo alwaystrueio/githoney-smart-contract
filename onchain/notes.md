@@ -2,28 +2,6 @@
 
 # Reviewed Sections
 
-## lib/utils.ak
-
-- Lines 12-22
-- Lines 37-43
-- Lines 45-57
-- Lines 31-35
-- Lines 25-29
-- Lines 59-64
-- Lines 66-79
-- Lines 81-109
-
-## lib/checks.ak
-
-- Lines 60-67
-- Lines 11-17
-- Lines 69-81
-- Lines 39-44
-- Lines 28-37
-- Lines 19-26
-- Lines 46-53
-- Lines 55-58
-
 ## validators/githoney_contract.ak
 
 - Lines 261-265
@@ -67,4 +45,39 @@
 - Lines 91-91
 - Lines 92-92
 - Lines 110-110
+- Lines 93-102
+- Lines 103-104
+- Lines 105-109
+- Lines 111-112
+- Lines 170-172
+- Lines 149-149
+- Lines 150-151
+- Lines 153-153
+- Lines 160-161
+- Lines 154-159
+- Lines 163-163
+- Lines 291-304
+
+## lib/utils.ak
+
+- Lines 12-22
+- Lines 37-43
+- Lines 45-57
+- Lines 31-35
+- Lines 25-29
+- Lines 59-64
+- Lines 66-79
+- Lines 81-109
+- Lines 111-142
+
+## lib/checks.ak
+
+- Lines 60-67
+- Lines 11-17
+- Lines 69-81
+- Lines 39-44
+- Lines 28-37
+- Lines 19-26
+- Lines 46-53
+- Lines 55-58
 
