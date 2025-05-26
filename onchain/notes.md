@@ -1,39 +1,5 @@
 # Audit Notes
 
-## validators/githoney_contract.ak
-
-### Note 1 (Lines 42-42)
-
-? What if GitHoney closes the settings with open bounties? Can the maintainer/admin get the money back or is it blocked forever? What if the maintainer merges the PR. Can the contributor get the money without settings?
-
-```
-      CloseSettings -> close_settings(datum, ctx)
-```
-
-### Note 2 (Lines 48-48)
-
-? Could I use it as a different purpose than minting?
-
-```
-  fn settings_policy(_redeemer: Redeemer, ctx: ScriptContext) {
-```
-
-### Note 3 (Lines 25-25)
-
-? Why is this transaciton necessary? Why not send the rewards to the contributor on Merge and that's it?
-
-```
-claim(datum, ctx)
-```
-
-### Note 4 (Lines 54-54)
-
-? Are "badges" related policies/validators part of the protocol? How exactly?
-
-```
-badges_policy
-```
-
 ## Project Notes
 
 ## lib/checks.ak
@@ -152,46 +118,38 @@ tokens_to_value
 ( 100 * 100 )
 ```
 
-## lib/types.ak
+## validators/githoney_contract.ak
 
-### Note 1 (Lines 28-28)
+### Note 1 (Lines 42-42)
 
-Unnecessary type. `Address` exists
-
-```
+? What if GitHoney closes the settings with open bounties? Can the maintainer/admin get the money back or is it blocked forever? What if the maintainer merges the PR. Can the contributor get the money without settings?
 
 ```
-
-### Note 2 (Lines 43-43)
-
-? Why do I need to repeat the bounty_reward_fee here? It's already in the SettingsUTxO's datum. Maybe to allow the bounty to keep working if the SettingsUTxO is closed or updated?
-
-```
-bounty_reward_fee
+      CloseSettings -> close_settings(datum, ctx)
 ```
 
-### Note 3 (Lines 46-46)
+### Note 2 (Lines 48-48)
 
-Why do I need this initial_value field?
-
-```
-initial_value
-```
-
-### Note 4 (Lines 45-45)
-
-? Is this field actually necessary?
+? Could I use it as a different purpose than minting?
 
 ```
-merged: Bool
+  fn settings_policy(_redeemer: Redeemer, ctx: ScriptContext) {
 ```
 
-### Note 5 (Lines 40-40)
+### Note 3 (Lines 25-25)
 
-! Change this to a PKH. It's only used to check if Tx was signed by admin
+? Why is this transaciton necessary? Why not send the rewards to the contributor on Merge and that's it?
 
 ```
-admin_wallet: Wallet
+claim(datum, ctx)
+```
+
+### Note 4 (Lines 54-54)
+
+? Are "badges" related policies/validators part of the protocol? How exactly?
+
+```
+badges_policy
 ```
 
 ## lib/validations.ak
@@ -340,43 +298,49 @@ are_payments_valid
 settings_datum
 ```
 
+## lib/types.ak
+
+### Note 1 (Lines 28-28)
+
+Unnecessary type. `Address` exists
+
+```
+
+```
+
+### Note 2 (Lines 43-43)
+
+? Why do I need to repeat the bounty_reward_fee here? It's already in the SettingsUTxO's datum. Maybe to allow the bounty to keep working if the SettingsUTxO is closed or updated?
+
+```
+bounty_reward_fee
+```
+
+### Note 3 (Lines 46-46)
+
+Why do I need this initial_value field?
+
+```
+initial_value
+```
+
+### Note 4 (Lines 45-45)
+
+? Is this field actually necessary?
+
+```
+merged: Bool
+```
+
+### Note 5 (Lines 40-40)
+
+! Change this to a PKH. It's only used to check if Tx was signed by admin
+
+```
+admin_wallet: Wallet
+```
+
 # Reviewed Sections
-
-## validators/githoney_contract.ak
-
-- Lines 47-47
-- Lines 49-51
-- Lines 34-41
-- Lines 43-46
-- Lines 42-42
-- Lines 21-21
-- Lines 22-22
-- Lines 24-24
-- Lines 23-23
-- Lines 25-25
-- Lines 26-32
-- Lines 14-20
-
-## lib/utils.ak
-
-- Lines 66-72
-- Lines 25-37
-- Lines 20-24
-- Lines 39-42
-- Lines 117-132
-- Lines 75-96
-- Lines 134-136
-- Lines 171-184
-- Lines 138-169
-
-## lib/checks.ak
-
-- Lines 34-41
-- Lines 15-31
-- Lines 11-13
-- Lines 43-48
-- Lines 57-64
-- Lines 66-69
 
 ## lib/validations.ak
 
@@ -395,4 +359,40 @@ settings_datum
 - Lines 170-187
 - Lines 196-198
 - Lines 190-190
+
+## validators/githoney_contract.ak
+
+- Lines 47-47
+- Lines 49-51
+- Lines 34-41
+- Lines 43-46
+- Lines 42-42
+- Lines 21-21
+- Lines 22-22
+- Lines 24-24
+- Lines 23-23
+- Lines 25-25
+- Lines 26-32
+- Lines 14-20
+
+## lib/checks.ak
+
+- Lines 34-41
+- Lines 15-31
+- Lines 11-13
+- Lines 43-48
+- Lines 57-64
+- Lines 66-69
+
+## lib/utils.ak
+
+- Lines 66-72
+- Lines 25-37
+- Lines 20-24
+- Lines 39-42
+- Lines 117-132
+- Lines 75-96
+- Lines 134-136
+- Lines 171-184
+- Lines 138-169
 
